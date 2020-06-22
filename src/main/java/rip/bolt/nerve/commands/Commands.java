@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.sk89q.minecraft.util.commands.CommandException;
 
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -109,7 +110,6 @@ public class Commands {
         return total;
     }
 
-
     private static long convert(int value, String unit) {
         switch (unit) {
         case "y":
@@ -126,6 +126,14 @@ public class Commands {
             return value;
         }
         return -1;
+    }
+
+    public static String note(String msg) {
+        return note(msg, ChatColor.WHITE);
+    }
+
+    public static String note(String msg, ChatColor colour) {
+        return colour + "[" + ChatColor.YELLOW + msg + colour + "]";
     }
 
 }

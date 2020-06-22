@@ -82,6 +82,12 @@ public class PunishmentCommands {
 
             target.disconnect(new TextComponent(BanFormatter.getMessage(punishment)));
         } else {
+            TextComponent adminChatMessage = new TextComponent(Commands.note("A") + " " + NameUtils.formatName(punisher) + ChatColor.YELLOW + " warned " + NameUtils.formatName(target) + ChatColor.YELLOW + " for " + ChatColor.WHITE + punishment.getReason());
+
+            for (ProxiedPlayer online : target.getServer().getInfo().getPlayers())
+                if (online.hasPermission("nerve.staff"))
+                    online.sendMessage(adminChatMessage);
+
             Title title = ProxyServer.getInstance().createTitle();
             title.stay(200);
             title.title(new TextComponent(ChatColor.RED + "WARNING"));

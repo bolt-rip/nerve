@@ -9,6 +9,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import rip.bolt.nerve.NervePlugin;
+import rip.bolt.nerve.utils.NameUtils;
 
 public class ReportCommands {
 
@@ -20,7 +21,7 @@ public class ReportCommands {
             throw new CommandException("Player is not on the same server.");
 
         String reason = cmd.getJoinedStrings(1);
-        TextComponent reportMessage = new TextComponent(note("R") + ChatColor.GRAY + " " + reporter.getName() + ChatColor.YELLOW + " reported " + ChatColor.GRAY + reported.getName() + ChatColor.YELLOW + " for " + ChatColor.WHITE + reason);
+        TextComponent reportMessage = new TextComponent(Commands.note("R") + " " + NameUtils.formatName(reporter) + ChatColor.YELLOW + " reported " + NameUtils.formatName(reported) + ChatColor.YELLOW + " for " + ChatColor.WHITE + reason);
         String discordMessage = "[" + reporter.getServer().getInfo().getName() + "] " + reporter.getName() + " reported " + reported.getName() + " for " + reason;
 
         for (ProxiedPlayer online : reporter.getServer().getInfo().getPlayers())
@@ -29,14 +30,6 @@ public class ReportCommands {
 
         NervePlugin.getInstance().getDiscordManager().sendMessageToPunishments(discordMessage);
         reporter.sendMessage(new TextComponent(ChatColor.GOLD + "Thank you. Your report has been submitted."));
-    }
-
-    private static String note(String msg) {
-        return note(msg, ChatColor.WHITE);
-    }
-
-    private static String note(String msg, ChatColor colour) {
-        return colour + "[" + ChatColor.YELLOW + msg + colour + "]";
     }
 
 }
