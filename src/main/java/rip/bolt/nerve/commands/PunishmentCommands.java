@@ -1,5 +1,7 @@
 package rip.bolt.nerve.commands;
 
+import java.util.List;
+
 import com.sk89q.minecraft.util.commands.ChatColor;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
@@ -14,6 +16,7 @@ import rip.bolt.nerve.NervePlugin;
 import rip.bolt.nerve.api.definitions.Punishment;
 import rip.bolt.nerve.api.definitions.PunishmentType;
 import rip.bolt.nerve.utils.BanFormatter;
+import rip.bolt.nerve.utils.DurationFormatter;
 import rip.bolt.nerve.utils.NameUtils;
 
 public class PunishmentCommands {
@@ -64,6 +67,39 @@ public class PunishmentCommands {
 
         Punishment punishment = new Punishment(target.getUniqueId(), Commands.getSenderUUID(sender), PunishmentType.WARN, reason, System.currentTimeMillis() / 1000, 0);
         punish(sender, target, punishment);
+    }
+
+    @Command(aliases = { "punishmenthistory", "ph" }, desc = "View a player's punishment history", usage = "<player>", min = 1)
+    public static void ph(final CommandContext cmd, CommandSender sender) throws CommandException {
+        Commands.shouldProxyHandle(sender);
+
+        ProxiedPlayer target = Commands.findPlayer(cmd.getString(0));
+        sender.sendMessage(new TextComponent(ChatColor.YELLOW + "Looking up punishment history for " + target.getName()));
+
+        List<Punishment> punishments = NervePlugin.getInstance().getAPIManager().getUserPunishments(target.getUniqueId());
+        if (punishments.size() == 0)
+            sender.sendMessage(new TextComponent(ChatColor.RED + "No punishments found."));
+
+        for (Punishment punishment : punishments) {
+            StringBuilder builder = new StringBuilder();
+
+            builder.append(NameUtils.formatName(punishment.getPunisher()));
+            builder.append(ChatColor.YELLOW).append(" \u00BB ");
+
+            boolean includeDuration = punishment.getType() == PunishmentType.BAN && punishment.getDuration() != -1;
+            if (includeDuration)
+                builder.append(ChatColor.RED).append(DurationFormatter.format(punishment.getDuration(), false)).append(" ");
+
+            String type = BanFormatter.calcColouredPunishmentType(punishment.getType(), punishment.getDuration());
+            if (includeDuration)
+                type = type.toLowerCase();
+
+            builder.append(type);
+            builder.append(ChatColor.YELLOW).append(" \u00BB ");
+            builder.append(punishment.getReason());
+
+            sender.sendMessage(new TextComponent(builder.toString()));
+        }
     }
 
     public static void punish(CommandSender punisher, ProxiedPlayer target, Punishment punishment) {

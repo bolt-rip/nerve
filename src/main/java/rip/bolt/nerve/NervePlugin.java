@@ -1,5 +1,7 @@
 package rip.bolt.nerve;
 
+import java.util.concurrent.TimeUnit;
+
 import com.sk89q.bungee.util.BungeeCommandsManager;
 import com.sk89q.bungee.util.CommandExecutor;
 import com.sk89q.bungee.util.CommandRegistration;
@@ -25,6 +27,7 @@ import rip.bolt.nerve.exception.DoNotHandleCommandException;
 import rip.bolt.nerve.exception.PlayerNotFoundException;
 import rip.bolt.nerve.listener.JoinListener;
 import rip.bolt.nerve.managers.DiscordManager;
+import rip.bolt.nerve.utils.NameFetcher;
 
 public class NervePlugin extends Plugin {
 
@@ -47,6 +50,7 @@ public class NervePlugin extends Plugin {
         discordManager = new DiscordManager();
 
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinListener());
+        ProxyServer.getInstance().getScheduler().schedule(this, new NameFetcher(), 1, TimeUnit.DAYS);
 
         setupCommands();
         System.out.println("[Nerve] Nerve is now enabled!");

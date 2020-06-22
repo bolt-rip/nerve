@@ -30,6 +30,13 @@ public class APIManager {
         return response.asList(Punishment.class);
     }
 
+    public List<Punishment> getUserPunishments(UUID uuid) {
+        Endpoint endpoint = userPunishmentsEndpoint.resolve("uuid", uuid);
+        Response response = endpoint.get();
+
+        return response.asList(Punishment.class);
+    }
+
     public void submitPunishment(Punishment punishment) {
         Endpoint endpoint = submitUserPunishmentEndpoint.resolve("uuid", punishment.getPlayer());
 

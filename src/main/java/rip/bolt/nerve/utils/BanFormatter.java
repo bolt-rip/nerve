@@ -26,8 +26,23 @@ public class BanFormatter {
             return duration == -1 ? "Permanent Ban" : "Ban";
         case KICK:
             return "Kick";
+        case WARN:
+            return "Warn";
         default:
-            return "";
+            return "Unknown punishment type " + type.toString();
+        }
+    }
+
+    public static String calcColouredPunishmentType(PunishmentType type, long duration) {
+        switch (type) {
+        case BAN:
+            return ChatColor.RED + (duration == -1 ? "Permanent Ban" : "Ban");
+        case KICK:
+            return ChatColor.YELLOW + "Kick";
+        case WARN:
+            return ChatColor.GREEN + "Warn";
+        default:
+            return "Unknown punishment type " + type.toString();
         }
     }
 
