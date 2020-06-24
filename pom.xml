@@ -7,6 +7,19 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<name>Nerve</name>
 
+	<scm>
+		<connection>scm:git:git://github.com/bolt-rip/nerve.git</connection>
+		<developerConnection>scm:git:git@github.com:bolt-rip/nerve.git</developerConnection>
+		<url>https://github.com/bolt-rip/nerve</url>
+	</scm>
+
+	<distributionManagement>
+		<repository>
+			<id>bolt-rip-public</id>
+			<url>https://repo.repsy.io/mvn/boltrip/public</url>
+		</repository>
+	</distributionManagement>
+
 	<repositories>
 		<repository>
 			<id>sonatype-public</id>
