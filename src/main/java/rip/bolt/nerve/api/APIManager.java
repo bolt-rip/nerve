@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
+import rip.bolt.nerve.NervePlugin;
 import rip.bolt.nerve.api.definitions.Punishment;
 import rip.bolt.nerve.config.AppData;
 
@@ -31,27 +32,37 @@ public class APIManager {
     }
 
     public List<Punishment> getActiveUserPunishments(UUID uuid) {
+        List<Punishment> cached = NervePlugin.getInstance().getPunishmentCache().getCachedActivePunishments(uuid);
+        if (cached != null)
+            return cached;
+
         WebTarget endpoint = activeUserPunishmentsEndpoint.resolveTemplate("uuid", uuid);
         Invocation.Builder builder = endpoint.request(MediaType.APPLICATION_JSON);
 
-        return builder.get(new GenericType<List<Punishment>>() {
-        });
+        return NervePlugin.getInstance().getPunishmentCache().cacheActive(uuid, builder.get(new GenericType<List<Punishment>>() {
+        }));
     }
 
     public List<Punishment> getUserPunishments(UUID uuid) {
+        List<Punishment> cached = NervePlugin.getInstance().getPunishmentCache().getCachedAllPunishments(uuid);
+        if (cached != null)
+            return cached;
+
         WebTarget endpoint = userPunishmentsEndpoint.resolveTemplate("uuid", uuid);
         Invocation.Builder builder = endpoint.request(MediaType.APPLICATION_JSON);
 
-        return builder.get(new GenericType<List<Punishment>>() {
-        });
+        return NervePlugin.getInstance().getPunishmentCache().cacheAll(uuid, builder.get(new GenericType<List<Punishment>>() {
+        }));
     }
 
     public void submitPunishment(Punishment punishment) {
+        NervePlugin.getInstance().getPunishmentCache().invalidateCache(punishment.getPlayer());
+
         WebTarget endpoint = submitUserPunishmentEndpoint.resolveTemplate("uuid", punishment.getPlayer());
         Invocation.Builder builder = endpoint.request(MediaType.APPLICATION_JSON);
 
         Response response = builder.post(Entity.entity(punishment, MediaType.APPLICATION_JSON));
-        if (response.getStatus() != 200 || response.getStatus() != 201)
+        if (response.getStatus() != 200 && response.getStatus() != 201)
             System.out.println("[Nerve] Error adding punishment for " + punishment.getPlayer() + " for " + punishment.getReason() + "\n" + response.readEntity(String.class));
     }
 
