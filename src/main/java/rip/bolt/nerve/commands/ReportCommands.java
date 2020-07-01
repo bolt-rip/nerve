@@ -22,13 +22,21 @@ public class ReportCommands {
 
         String reason = cmd.getJoinedStrings(1);
         TextComponent reportMessage = new TextComponent(Commands.note("R") + " " + NameUtils.formatName(reporter) + ChatColor.YELLOW + " reported " + NameUtils.formatName(reported) + ChatColor.YELLOW + " for " + ChatColor.WHITE + reason);
-        String discordMessage = "[" + reporter.getServer().getInfo().getName() + "] " + reporter.getName() + " reported " + reported.getName() + " for " + reason;
 
-        for (ProxiedPlayer online : reporter.getServer().getInfo().getPlayers())
-            if (online.hasPermission("nerve.staff"))
+        int numStaffOnline = 0;
+        StringBuilder onlineStaff = new StringBuilder();
+
+        for (ProxiedPlayer online : reporter.getServer().getInfo().getPlayers()) {
+            if (online.hasPermission("nerve.staff")) {
                 online.sendMessage(reportMessage);
 
-        NervePlugin.getInstance().getDiscordManager().sendMessageToPunishments(discordMessage);
+                numStaffOnline++;
+                onlineStaff.append(NameUtils.formatNameDiscord(online)).append(", ");
+            }
+        }
+        onlineStaff.setLength(onlineStaff.length() - 2);
+
+        NervePlugin.getInstance().getDiscordManager().sendReport(reporter.getServer().getInfo().getName(), NameUtils.formatNameDiscord(reporter), NameUtils.formatNameDiscord(reported), reason, onlineStaff.toString(), numStaffOnline);
         reporter.sendMessage(new TextComponent(ChatColor.GOLD + "Thank you. Your report has been submitted."));
     }
 

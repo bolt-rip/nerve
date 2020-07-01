@@ -18,6 +18,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import rip.bolt.nerve.api.APIManager;
+import rip.bolt.nerve.api.PunishmentCache;
 import rip.bolt.nerve.commands.MessageCommands;
 import rip.bolt.nerve.commands.PunishmentCommands;
 import rip.bolt.nerve.commands.ReportCommands;
@@ -34,6 +35,7 @@ public class NervePlugin extends Plugin {
     protected BungeeCommandsManager commands;
     protected CommandRegistration cmdRegister;
 
+    protected PunishmentCache punishmentCache;
     protected APIManager apiManager;
     protected DiscordManager discordManager;
 
@@ -46,6 +48,7 @@ public class NervePlugin extends Plugin {
         instance = this;
         appConfig = new ConfigManager(this, "config").get();
 
+        punishmentCache = new PunishmentCache();
         apiManager = new APIManager();
         discordManager = new DiscordManager();
 
@@ -106,14 +109,17 @@ public class NervePlugin extends Plugin {
         return appConfig;
     }
 
-    public DiscordManager getDiscordManager() {
-        return discordManager;
+    public PunishmentCache getPunishmentCache() {
+        return punishmentCache;
     }
 
     public APIManager getAPIManager() {
         return apiManager;
     }
 
+    public DiscordManager getDiscordManager() {
+        return discordManager;
+    }
 
     public static NervePlugin getInstance() {
         return instance;

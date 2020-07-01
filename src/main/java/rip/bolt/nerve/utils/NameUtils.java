@@ -9,6 +9,12 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class NameUtils {
 
+    public static String formatNameDiscord(CommandSender sender) {
+        String flair = sender.hasPermission("nerve.staff") ? "\u2756" : "";
+
+        return flair + sender.getName();
+    }
+
     public static String formatName(CommandSender sender) {
         String flair = sender.hasPermission("nerve.staff") ? ChatColor.GOLD + "\u2756" : "";
 

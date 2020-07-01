@@ -1,6 +1,9 @@
 package rip.bolt.nerve.managers;
 
+import java.awt.Color;
+
 import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -26,6 +29,23 @@ public class DiscordManager {
             System.out.println("[Nerve] Failed to login!");
             e.printStackTrace();
         }
+    }
+
+    public void sendReport(String server, String reporter, String reported, String reason, String staffOnline, int numStaffOnline) {
+        if (punishmentsChannel == null)
+            return;
+
+        EmbedBuilder reportEmbed = new EmbedBuilder();
+        reportEmbed.setTitle("Player report");
+        reportEmbed.setColor(Color.ORANGE);
+
+        reportEmbed.setDescription(reporter + " reported " + reported);
+        reportEmbed.addField("Server", server, false);
+        reportEmbed.addField("Reason", reason, false);
+
+        reportEmbed.setFooter("Staff online (" + numStaffOnline + "): " + staffOnline);
+
+        punishmentsChannel.sendMessage(reportEmbed.build()).queue();
     }
 
     public void sendMessageToPunishments(String message) {
