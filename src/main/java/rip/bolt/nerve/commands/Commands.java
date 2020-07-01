@@ -3,6 +3,7 @@ package rip.bolt.nerve.commands;
 import java.util.UUID;
 
 import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.minecraft.util.commands.CommandPermissionsException;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -56,6 +57,17 @@ public class Commands {
         ProxiedPlayer player = (ProxiedPlayer) sender;
         if (ServerUtils.isPrivateServer(player.getServer().getInfo().getName()))
             throw new DoNotHandleCommandException();
+    }
+
+    /**
+     * Throws an exception if the sender does not have permission.
+     * 
+     * @param permission the permission to check
+     * @throws CommandException if the sender does not have permission.
+     */
+    public static void checkPermission(CommandSender sender, String permission) throws CommandException {
+        if (!sender.hasPermission(permission))
+            throw new CommandPermissionsException();
     }
 
     /**

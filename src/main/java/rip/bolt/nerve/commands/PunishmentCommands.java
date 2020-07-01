@@ -24,6 +24,7 @@ public class PunishmentCommands {
     @Command(aliases = { "ban", "permban", "pb" }, desc = "Permanently ban a player", usage = "<player> <reason>", min = 2)
     public static void ban(final CommandContext cmd, CommandSender sender) throws CommandException {
         Commands.shouldProxyHandle(sender);
+        Commands.checkPermission(sender, "nerve.staff");
 
         ProxiedPlayer target = Commands.findPlayer(cmd.getString(0));
         String reason = cmd.getJoinedStrings(1);
@@ -37,6 +38,7 @@ public class PunishmentCommands {
     @Command(aliases = { "tempban", "tb" }, desc = "Temporarily ban a player", usage = "<player> <time> <reason>", min = 2)
     public static void tempban(final CommandContext cmd, CommandSender sender) throws CommandException {
         Commands.shouldProxyHandle(sender);
+        Commands.checkPermission(sender, "nerve.staff");
 
         ProxiedPlayer target = Commands.findPlayer(cmd.getString(0));
         long duration = Commands.parseTime(cmd.getString(1));
@@ -50,6 +52,7 @@ public class PunishmentCommands {
     @Command(aliases = { "kick" }, desc = "Kick a player", usage = "<player> <reason>", min = 2)
     public static void kick(final CommandContext cmd, CommandSender sender) throws CommandException {
         Commands.shouldProxyHandle(sender);
+        Commands.checkPermission(sender, "nerve.staff");
 
         ProxiedPlayer target = Commands.findPlayer(cmd.getString(0));
         String reason = cmd.getJoinedStrings(1);
@@ -61,6 +64,7 @@ public class PunishmentCommands {
     @Command(aliases = { "warn" }, desc = "Warn a player", usage = "<player> <reason>", min = 2)
     public static void warn(final CommandContext cmd, CommandSender sender) throws CommandException {
         Commands.shouldProxyHandle(sender);
+        Commands.checkPermission(sender, "nerve.staff");
 
         ProxiedPlayer target = Commands.findPlayer(cmd.getString(0));
         String reason = cmd.getJoinedStrings(1);
@@ -72,6 +76,7 @@ public class PunishmentCommands {
     @Command(aliases = { "punishmenthistory", "ph" }, desc = "View a player's punishment history", usage = "<player>", min = 1)
     public static void ph(final CommandContext cmd, CommandSender sender) throws CommandException {
         Commands.shouldProxyHandle(sender);
+        Commands.checkPermission(sender, "nerve.staff");
 
         ProxiedPlayer target = Commands.findPlayer(cmd.getString(0));
         sender.sendMessage(new TextComponent(ChatColor.YELLOW + "Looking up punishment history for " + target.getName()));
