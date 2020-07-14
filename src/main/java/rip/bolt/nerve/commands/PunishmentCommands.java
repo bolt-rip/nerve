@@ -21,7 +21,7 @@ import rip.bolt.nerve.utils.NameUtils;
 
 public class PunishmentCommands {
 
-    @Command(aliases = { "ban", "permban", "pb" }, desc = "Permanently ban a player", usage = "<player> <reason>", min = 2)
+    @Command(aliases = { "ban", "permban", "pb", "pgm:ban", "pgm:permban", "pgm:pb" }, desc = "Permanently ban a player", usage = "<player> <reason>", min = 2)
     public static void ban(final CommandContext cmd, CommandSender sender) throws CommandException {
         Commands.shouldProxyHandle(sender);
         Commands.checkPermission(sender, "nerve.staff");
@@ -49,7 +49,7 @@ public class PunishmentCommands {
         punish(sender, target, punishment);
     }
 
-    @Command(aliases = { "kick" }, desc = "Kick a player", usage = "<player> <reason>", min = 2)
+    @Command(aliases = { "kick", "k", "pgm:kick", "pgm:k" }, desc = "Kick a player", usage = "<player> <reason>", min = 2)
     public static void kick(final CommandContext cmd, CommandSender sender) throws CommandException {
         Commands.shouldProxyHandle(sender);
         Commands.checkPermission(sender, "nerve.staff");
@@ -61,7 +61,7 @@ public class PunishmentCommands {
         punish(sender, target, punishment);
     }
 
-    @Command(aliases = { "warn" }, desc = "Warn a player", usage = "<player> <reason>", min = 2)
+    @Command(aliases = { "warn", "w", "pgm:warn", "pgm:w" }, desc = "Warn a player", usage = "<player> <reason>", min = 2)
     public static void warn(final CommandContext cmd, CommandSender sender) throws CommandException {
         Commands.shouldProxyHandle(sender);
         Commands.checkPermission(sender, "nerve.staff");
