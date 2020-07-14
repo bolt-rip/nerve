@@ -151,6 +151,7 @@
 								</includes>
 								<excludes>
 									<exclude>net.md-5:bungeecord-api</exclude>
+									<exclude>de.craftmania:DockerizedCraft</exclude>
 								</excludes>
 							</artifactSet>
 						</configuration>
