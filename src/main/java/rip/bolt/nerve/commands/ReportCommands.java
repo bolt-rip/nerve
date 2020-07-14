@@ -34,7 +34,9 @@ public class ReportCommands {
                 onlineStaff.append(NameUtils.formatNameDiscord(online)).append(", ");
             }
         }
-        onlineStaff.setLength(onlineStaff.length() - 2);
+
+        if (onlineStaff.length() >= 2)
+            onlineStaff.setLength(onlineStaff.length() - 2);
 
         NervePlugin.getInstance().getDiscordManager().sendReport(reporter.getServer().getInfo().getName(), NameUtils.formatNameDiscord(reporter), NameUtils.formatNameDiscord(reported), reason, onlineStaff.toString(), numStaffOnline);
         reporter.sendMessage(new TextComponent(ChatColor.GOLD + "Thank you. Your report has been submitted."));
