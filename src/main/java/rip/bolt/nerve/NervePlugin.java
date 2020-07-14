@@ -22,12 +22,15 @@ import rip.bolt.nerve.api.PunishmentCache;
 import rip.bolt.nerve.commands.MessageCommands;
 import rip.bolt.nerve.commands.PunishmentCommands;
 import rip.bolt.nerve.commands.ReportCommands;
+import rip.bolt.nerve.commands.ServerCommand;
 import rip.bolt.nerve.config.Config;
 import rip.bolt.nerve.config.ConfigManager;
 import rip.bolt.nerve.exception.DoNotHandleCommandException;
 import rip.bolt.nerve.exception.PlayerNotFoundException;
 import rip.bolt.nerve.listener.JoinListener;
+import rip.bolt.nerve.listener.PrivateServerAddedListener;
 import rip.bolt.nerve.managers.DiscordManager;
+import rip.bolt.nerve.managers.PrivateServerManager;
 import rip.bolt.nerve.utils.NameFetcher;
 
 public class NervePlugin extends Plugin {
@@ -47,21 +50,26 @@ public class NervePlugin extends Plugin {
     public void onEnable() {
         instance = this;
         appConfig = new ConfigManager(this, "config").get();
+        new ConfigManager(this, "template"); // copy template.yml from jar into plugins/Nerve/template.yml
 
         punishmentCache = new PunishmentCache();
         apiManager = new APIManager();
         discordManager = new DiscordManager();
 
+        PrivateServerManager privateServerManager = new PrivateServerManager();
+
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinListener());
+        ProxyServer.getInstance().getPluginManager().registerListener(this, new PrivateServerAddedListener(privateServerManager));
         ProxyServer.getInstance().getScheduler().schedule(this, new NameFetcher(), 1, TimeUnit.DAYS);
 
         setupCommands();
+        ProxyServer.getInstance().getPluginManager().registerCommand(this, new ServerCommand(privateServerManager));
+
         System.out.println("[Nerve] Nerve is now enabled!");
     }
 
     @Override
     public void onDisable() {
-        setupCommands();
         System.out.println("[Nerve] Nerve is now disabled!");
 
         instance = null;

@@ -13,7 +13,7 @@ import rip.bolt.nerve.utils.NameUtils;
 
 public class ReportCommands {
 
-    @Command(aliases = { "report" }, desc = "Report a player for breaking the rules", usage = "<player> <reason>", min = 2)
+    @Command(aliases = { "report", "pgm:report" }, desc = "Report a player for breaking the rules", usage = "<player> <reason>", min = 2)
     public static void report(final CommandContext cmd, CommandSender sender) throws CommandException {
         ProxiedPlayer reporter = Commands.checkIfSenderIsPlayer(sender);
         ProxiedPlayer reported = Commands.findPlayer(cmd.getString(0));
@@ -34,7 +34,9 @@ public class ReportCommands {
                 onlineStaff.append(NameUtils.formatNameDiscord(online)).append(", ");
             }
         }
-        onlineStaff.setLength(onlineStaff.length() - 2);
+
+        if (onlineStaff.length() >= 2)
+            onlineStaff.setLength(onlineStaff.length() - 2);
 
         NervePlugin.getInstance().getDiscordManager().sendReport(reporter.getServer().getInfo().getName(), NameUtils.formatNameDiscord(reporter), NameUtils.formatNameDiscord(reported), reason, onlineStaff.toString(), numStaffOnline);
         reporter.sendMessage(new TextComponent(ChatColor.GOLD + "Thank you. Your report has been submitted."));

@@ -7,6 +7,9 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
 import net.md_5.bungee.api.ChatColor;
 import rip.bolt.nerve.config.AppData;
 
@@ -17,14 +20,26 @@ public class DiscordManager {
 
     public DiscordManager() {
         try {
-            JDA jda = new JDABuilder(AccountType.BOT).setToken(AppData.Discord.getToken()).build();
-            jda.awaitReady();
+            JDABuilder builder = new JDABuilder(AccountType.BOT);
+            builder.setToken(AppData.Discord.getToken());
+            builder.addEventListeners(new EventListener() {
+                
+                @Override
+                public void onEvent(GenericEvent event) {
+                    if (event instanceof ReadyEvent) {
+                        System.out.println("[Nerve] Connected to discord.");
 
-            punishmentsChannel = jda.getTextChannelById(AppData.Discord.getChannelId());
-            if (punishmentsChannel == null)
-                System.out.println("[Nerve] Invalid channel id!");
-            else
-                System.out.println("[Nerve] Found #punishments.");
+                        punishmentsChannel = jda.getTextChannelById(AppData.Discord.getChannelId());
+                        if (punishmentsChannel == null)
+                            System.out.println("[Nerve] Invalid channel id!");
+                        else
+                            System.out.println("[Nerve] Found #punishments.");
+                    }
+                }
+
+            });
+
+            jda = builder.build();
         } catch (Exception e) {
             System.out.println("[Nerve] Failed to login!");
             e.printStackTrace();
