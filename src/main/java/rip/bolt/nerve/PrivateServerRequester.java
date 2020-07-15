@@ -2,16 +2,41 @@ package rip.bolt.nerve;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONObject;
+import org.yaml.snakeyaml.Yaml;
 
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import rip.bolt.nerve.utils.MapUtils;
 
 public class PrivateServerRequester {
+
+    private static Map<String, Object> generateTemplate() {
+        try {
+            File dataFolder = NervePlugin.getInstance().getDataFolder();
+            File templatePath = new File(dataFolder, "template.yml");
+            File secretsPath = new File(dataFolder, "secrets.yml");
+
+            Map<String, Object> template = (Map<String, Object>) new Yaml().load(new FileInputStream(templatePath));
+            Map<String, Object> secrets = null;
+
+            if (secretsPath.exists())
+                secrets = (Map<String, Object>) new Yaml().load(new FileInputStream(secretsPath));
+            else
+                secrets = new HashMap<String, Object>();
+
+            return (Map<String, Object>) MapUtils.merge(template, secrets);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 
     public static boolean request(String name) {
         try {
@@ -19,7 +44,7 @@ public class PrivateServerRequester {
 
             CustomResourceDefinitionContext context = new CustomResourceDefinitionContext.Builder().withName("helmreleases.helm.fluxcd.io").withGroup("helm.fluxcd.io").withScope("Namespaced").withVersion("v1").withPlural("helmreleases").build();
 
-            Map<String, Object> template = client.customResource(context).load(new FileInputStream(new File(NervePlugin.getInstance().getDataFolder(), "template.yml")));
+            Map<String, Object> template = generateTemplate();
             JSONObject helmReleaseJSONObject = new JSONObject(template);
 
             // it is needed to change it twice because without that the server name would be "minecraft-${name}"
