@@ -7,6 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: add luckperms password database
+        uses: mikefarah/yq@3.3
+        run: yq w -i src/main/resources/template.yml spec.values.luckperms.data.password ${{ secrets.LUCKPERMS_DB_PASSWORD }}
       - name: Set up Maven
         uses: actions/setup-java@v1
         with:
