@@ -1,6 +1,6 @@
 discord:
   token: invalid-token
-  channel-id: -1
+  channel-id: "-1"
 
 api:
   url: https://localhost:3000/v1/

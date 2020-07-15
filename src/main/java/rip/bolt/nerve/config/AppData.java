@@ -12,8 +12,8 @@ public class AppData {
             return section.getString("token");
         }
 
-        public static long getChannelId() {
-            return section.getLong("channel-id");
+        public static String getChannelId() {
+            return section.getString("channel-id");
         }
 
     }
