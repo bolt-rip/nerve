@@ -58,7 +58,7 @@ public class ServerCommand extends Command implements TabExecutor {
             ProxiedPlayer player = (ProxiedPlayer) sender;
             ServerInfo server = servers.get(args[0]);
 
-            if (args[0].equalsIgnoreCase(player.getName()) && server == null) { // request server
+            if (player.hasPermission("nerve.request") && args[0].equalsIgnoreCase(player.getName()) && server == null) { // request server
                 if (manager.hasRequested(player)) {
                     player.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "You have already requested a private server! Please wait a minute for it to start up."));
                     return;

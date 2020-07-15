@@ -19,6 +19,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import rip.bolt.nerve.api.APIManager;
 import rip.bolt.nerve.api.PunishmentCache;
+import rip.bolt.nerve.commands.ChatCommands;
 import rip.bolt.nerve.commands.MessageCommands;
 import rip.bolt.nerve.commands.PunishmentCommands;
 import rip.bolt.nerve.commands.ReportCommands;
@@ -111,6 +112,7 @@ public class NervePlugin extends Plugin {
         cmdRegister.register(MessageCommands.class);
         cmdRegister.register(PunishmentCommands.class);
         cmdRegister.register(ReportCommands.class);
+        cmdRegister.register(ChatCommands.class);
     }
 
     public Config getAppConfig() {
