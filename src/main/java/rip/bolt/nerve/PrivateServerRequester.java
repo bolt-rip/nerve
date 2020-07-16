@@ -53,8 +53,8 @@ public class PrivateServerRequester {
             JSONObject spec = helmReleaseJSONObject.getJSONObject("spec");
             JSONObject config = spec.getJSONObject("values").getJSONObject("config");
 
-            metadata.put("name", name.toLowerCase().replaceAll("_", "-"));
-            spec.put("releaseName", name.toLowerCase().replaceAll("_", "-"));
+            metadata.put("name", "private-" + name.toLowerCase().replaceAll("_", "-") + "-server");
+            config.put("serverName", name);
             config.put("operators", name);
 
             client.customResource(context).create("minecraft", helmReleaseJSONObject.toString());
