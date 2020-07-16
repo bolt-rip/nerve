@@ -1,5 +1,8 @@
 package rip.bolt.nerve;
 
+import java.lang.reflect.Field;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.sk89q.bungee.util.BungeeCommandsManager;
@@ -16,7 +19,9 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginManager;
 import rip.bolt.nerve.api.APIManager;
 import rip.bolt.nerve.api.PunishmentCache;
 import rip.bolt.nerve.commands.ChatCommands;
@@ -65,6 +70,7 @@ public class NervePlugin extends Plugin {
 
         setupCommands();
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new ServerCommand(privateServerManager));
+        renameEnd();
 
         System.out.println("[Nerve] Nerve is now enabled!");
     }
@@ -113,6 +119,24 @@ public class NervePlugin extends Plugin {
         cmdRegister.register(PunishmentCommands.class);
         cmdRegister.register(ReportCommands.class);
         cmdRegister.register(ChatCommands.class);
+    }
+
+    public void renameEnd() {
+        try {
+            Field commandMapField = PluginManager.class.getDeclaredField("commandMap");
+            commandMapField.setAccessible(true);
+            Map<String, Command> commandMap = (Map<String, Command>) commandMapField.get(ProxyServer.getInstance().getPluginManager());
+
+            String endName = "end".toLowerCase(Locale.ROOT);
+            String gendName = "gend".toLowerCase(Locale.ROOT);
+
+            Command end = commandMap.get(endName);
+            commandMap.remove(endName);
+            commandMap.put(gendName, end);
+        } catch (Exception e) {
+            System.out.println("[Nerve] Failed to rename /end to /gend");
+            e.printStackTrace();
+        }
     }
 
     public Config getAppConfig() {
