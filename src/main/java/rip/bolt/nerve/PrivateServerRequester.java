@@ -54,6 +54,7 @@ public class PrivateServerRequester {
             JSONObject config = spec.getJSONObject("values").getJSONObject("config");
 
             metadata.put("name", "private-" + name.toLowerCase().replaceAll("_", "-") + "-server");
+            spec.put("releaseName", name.toLowerCase().replaceAll("_", "-") + "-server");
             config.put("serverName", name);
             config.put("operators", name);
 
