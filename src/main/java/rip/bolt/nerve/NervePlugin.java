@@ -33,6 +33,7 @@ import rip.bolt.nerve.config.Config;
 import rip.bolt.nerve.config.ConfigManager;
 import rip.bolt.nerve.exception.DoNotHandleCommandException;
 import rip.bolt.nerve.exception.PlayerNotFoundException;
+import rip.bolt.nerve.listener.ForgeModListListener;
 import rip.bolt.nerve.listener.JoinListener;
 import rip.bolt.nerve.listener.PrivateServerAddedListener;
 import rip.bolt.nerve.managers.DiscordManager;
@@ -67,6 +68,9 @@ public class NervePlugin extends Plugin {
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinListener());
         ProxyServer.getInstance().getPluginManager().registerListener(this, new PrivateServerAddedListener(privateServerManager));
         ProxyServer.getInstance().getScheduler().schedule(this, new NameFetcher(), 1, TimeUnit.DAYS);
+
+        ProxyServer.getInstance().registerChannel("FML|HS");
+        ProxyServer.getInstance().getPluginManager().registerListener(this, new ForgeModListListener());
 
         setupCommands();
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new ServerCommand(privateServerManager));
