@@ -5,3 +5,17 @@ discord:
 api:
   url: https://localhost:3000/v1/
   key: authorisation-key
+
+features:
+- staff-chat:
+    servers: # which servers this feature is enabled on. glob, regex & server names (case sensitive) are supported. use a - at the start to negate the rule.
+    - glob:**
+- private-messages:
+    servers:
+    - glob:**
+- punishments:
+    servers:
+    - glob:**
+- report:
+    servers:
+    - glob:**

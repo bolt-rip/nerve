@@ -19,6 +19,8 @@ public class MessageCommands {
 
     @Command(aliases = { "msg", "message", "pm", "dm", "privatemessage", "whisper", "tell", "pgm:msg", "pgm:tell", "pgm:pm", "pgm:dm" }, desc = "Send a private message to a player.", usage = "<player> <message>", min = 2)
     public static void msg(final CommandContext cmd, CommandSender sender) throws CommandException {
+        Commands.isFeatureEnabled("private-messages", sender);
+
         ProxiedPlayer player = Commands.checkIfSenderIsPlayer(sender);
         ProxiedPlayer target = Commands.findPlayer(cmd.getString(0));
 
@@ -29,6 +31,8 @@ public class MessageCommands {
 
     @Command(aliases = { "reply", "r", "pgm:reply", "pgm:r" }, desc = "Reply to a private message", min = 1)
     public static void reply(final CommandContext cmd, CommandSender sender) throws CommandException {
+        Commands.isFeatureEnabled("private-messages", sender);
+
         ProxiedPlayer player = Commands.checkIfSenderIsPlayer(sender);
 
         String targetName = replyTo.get(player);

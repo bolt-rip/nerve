@@ -33,6 +33,7 @@ import rip.bolt.nerve.config.Config;
 import rip.bolt.nerve.config.ConfigManager;
 import rip.bolt.nerve.exception.DoNotHandleCommandException;
 import rip.bolt.nerve.exception.PlayerNotFoundException;
+import rip.bolt.nerve.feature.FeatureManager;
 import rip.bolt.nerve.listener.ForgeModListListener;
 import rip.bolt.nerve.listener.JoinListener;
 import rip.bolt.nerve.listener.PrivateServerAddedListener;
@@ -46,6 +47,7 @@ public class NervePlugin extends Plugin {
     protected CommandRegistration cmdRegister;
 
     protected PunishmentCache punishmentCache;
+    protected FeatureManager featureManager;
     protected APIManager apiManager;
     protected DiscordManager discordManager;
 
@@ -58,6 +60,8 @@ public class NervePlugin extends Plugin {
         instance = this;
         appConfig = new ConfigManager(this, "config").get();
         new ConfigManager(this, "template"); // copy template.yml from jar into plugins/Nerve/template.yml
+        featureManager = new FeatureManager();
+        featureManager.loadFromConfig();
 
         punishmentCache = new PunishmentCache();
         apiManager = new APIManager();
@@ -149,6 +153,10 @@ public class NervePlugin extends Plugin {
 
     public PunishmentCache getPunishmentCache() {
         return punishmentCache;
+    }
+
+    public FeatureManager getFeatureManager() {
+        return featureManager;
     }
 
     public APIManager getAPIManager() {

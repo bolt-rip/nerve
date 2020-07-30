@@ -11,7 +11,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import rip.bolt.nerve.exception.DoNotHandleCommandException;
 import rip.bolt.nerve.exception.PlayerNotFoundException;
-import rip.bolt.nerve.utils.ServerUtils;
+import rip.bolt.nerve.feature.Feature;
 
 public class Commands {
 
@@ -45,17 +45,18 @@ public class Commands {
     }
 
     /**
-     * Should BungeeCord handle this command, or should it be sent to the Bukkit server.
+     * If this feature is enabled on Nerve, the command is sent to the Bukkit server.
      * 
+     * @param feature the name of the feature
      * @param sender the sender running this command
      * @throws CommandException if the command should not be handled by BungeeCord
      */
-    public static void shouldProxyHandle(CommandSender sender) throws CommandException {
+    public static void isFeatureEnabled(String feature, CommandSender sender) throws CommandException {
         if (!(sender instanceof ProxiedPlayer))
             return;
 
         ProxiedPlayer player = (ProxiedPlayer) sender;
-        if (ServerUtils.isPrivateServer(player.getServer().getInfo().getName()))
+        if (!Feature.isFeatureEnabledOnServer(feature, player.getServer().getInfo().getName()))
             throw new DoNotHandleCommandException();
     }
 

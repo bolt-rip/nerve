@@ -17,6 +17,8 @@ public class ChatCommands {
     @Command(aliases = { "s" }, desc = "Send a message to global staff chat.", usage = "<message>", min = 1)
     @CommandPermissions("nerve.staff")
     public static void s(final CommandContext cmd, CommandSender sender) throws CommandException {
+        Commands.isFeatureEnabled("staff-chat", sender);
+
         ProxiedPlayer player = Commands.checkIfSenderIsPlayer(sender);
         TextComponent adminChatMessage = new TextComponent(Commands.note("S") + " " + NameUtils.formatName(player) + ChatColor.RESET + ": " + cmd.getJoinedStrings(0));
 

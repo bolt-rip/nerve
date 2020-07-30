@@ -15,6 +15,8 @@ public class ReportCommands {
 
     @Command(aliases = { "report", "pgm:report" }, desc = "Report a player for breaking the rules", usage = "<player> <reason>", min = 2)
     public static void report(final CommandContext cmd, CommandSender sender) throws CommandException {
+        Commands.isFeatureEnabled("report", sender);
+
         ProxiedPlayer reporter = Commands.checkIfSenderIsPlayer(sender);
         ProxiedPlayer reported = Commands.findPlayer(cmd.getString(0));
         if (!reporter.getServer().getInfo().equals(reported.getServer().getInfo()))
