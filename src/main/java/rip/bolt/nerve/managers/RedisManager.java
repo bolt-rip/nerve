@@ -1,6 +1,7 @@
 package rip.bolt.nerve.managers;
 
 import java.util.Arrays;
+import java.util.List;
 
 import net.md_5.bungee.api.ProxyServer;
 import redis.clients.jedis.Jedis;
@@ -13,12 +14,14 @@ public class RedisManager {
 
     private Jedis subscriber, publisher;
 
-    private static String[] channels = { "queue" };
+    private static List<String> publisherChannels = Arrays.asList("requeue");
+    private static String[] subscriberChannels = { "queue", "requeue-response" };
 
     public RedisManager() {
         if (!AppData.Redis.isEnabled())
             return;
 
+        System.out.println("[Nerve] Connecting to Redis...");
         subscriber = new Jedis(AppData.Redis.getHost(), AppData.Redis.getPort());
         publisher = new Jedis(AppData.Redis.getHost(), AppData.Redis.getPort());
 
@@ -32,19 +35,19 @@ public class RedisManager {
                         ProxyServer.getInstance().getPluginManager().callEvent(new RedisMessageEvent(channel, message));
                     }
 
-                }, channels);
+                }, subscriberChannels);
             }
 
         });
     }
 
     public void sendRedisMessage(String channel, String message) {
-        if (!Arrays.asList(channels).contains(channel))
-            throw new IllegalArgumentException("Channel " + channel + " is not registered!");
+        if (!publisherChannels.contains(channel))
+            throw new IllegalArgumentException("Channel " + channel + " is not registered for publishing!");
 
         if (AppData.Redis.isEnabled())
             publisher.publish(channel, message);
-        else // fire the event since if redis was running, we would receieve the event from the subscriber anyway
+        else if (Arrays.asList(subscriberChannels).contains(channel)) // fire the event since if redis was running, we would receieve the event from the subscriber anyway
             ProxyServer.getInstance().getPluginManager().callEvent(new RedisMessageEvent(channel, message));
     }
 

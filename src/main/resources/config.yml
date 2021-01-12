@@ -3,5 +3,10 @@ api:
   key: authorisation-key
   currently-running-matches: ranked/servers
 
+redis:
+  enabled: true
+  host: localhost
+  port: 6379
+
 automove:
   poll-duration: 15

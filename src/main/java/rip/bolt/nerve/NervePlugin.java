@@ -6,13 +6,16 @@ import com.sk89q.bungee.util.CommandRegistration;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import rip.bolt.nerve.api.APIManager;
+import rip.bolt.nerve.commands.RequeueCommand;
 import rip.bolt.nerve.commands.ServerCommand;
 import rip.bolt.nerve.config.Config;
 import rip.bolt.nerve.config.ConfigManager;
 import rip.bolt.nerve.listener.JoinListener;
+import rip.bolt.nerve.listener.RequeueResponseListener;
 import rip.bolt.nerve.listener.ServerAddedListener;
 import rip.bolt.nerve.managers.AutomoveManager;
 import rip.bolt.nerve.managers.PrivateServerManager;
+import rip.bolt.nerve.managers.RedisManager;
 
 public class NervePlugin extends Plugin {
 
@@ -21,6 +24,7 @@ public class NervePlugin extends Plugin {
 
     protected APIManager apiManager;
     protected AutomoveManager automoveManager;
+    protected RedisManager redisManager;
 
     protected Config appConfig;
 
@@ -34,11 +38,14 @@ public class NervePlugin extends Plugin {
 
         apiManager = new APIManager();
         automoveManager = new AutomoveManager();
+        redisManager = new RedisManager();
         PrivateServerManager privateServerManager = new PrivateServerManager();
 
         ProxyServer.getInstance().getPluginManager().registerListener(this, new ServerAddedListener(privateServerManager));
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinListener());
+        ProxyServer.getInstance().getPluginManager().registerListener(this, new RequeueResponseListener());
 
+        ProxyServer.getInstance().getPluginManager().registerCommand(this, new RequeueCommand());
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new ServerCommand(privateServerManager));
 
         System.out.println("[Nerve] Nerve is now enabled!");
@@ -61,6 +68,10 @@ public class NervePlugin extends Plugin {
 
     public AutomoveManager getAutomoveManager() {
         return automoveManager;
+    }
+
+    public RedisManager getRedisManager() {
+        return redisManager;
     }
 
     public static NervePlugin getInstance() {
