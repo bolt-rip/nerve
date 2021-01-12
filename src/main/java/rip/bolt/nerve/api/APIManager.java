@@ -1,69 +1,35 @@
 package rip.bolt.nerve.api;
 
 import java.util.List;
-import java.util.UUID;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
-import rip.bolt.nerve.NervePlugin;
-import rip.bolt.nerve.api.definitions.Punishment;
+import rip.bolt.nerve.api.definitions.Match;
 import rip.bolt.nerve.config.AppData;
 
 public class APIManager {
 
     private Client client;
-    private WebTarget userPunishmentsEndpoint, activeUserPunishmentsEndpoint, submitUserPunishmentEndpoint;
+    private WebTarget currentlyRunningMatchesEndpoint;
 
     public APIManager() {
         client = ClientBuilder.newClient().register(JacksonJsonProvider.class).register(AuthorisationHeaderFilter.class);
-
-        userPunishmentsEndpoint = client.target(AppData.API.getURL() + AppData.userPunishmentEndpoint);
-        activeUserPunishmentsEndpoint = userPunishmentsEndpoint.queryParam("active", "true");
-        submitUserPunishmentEndpoint = client.target(AppData.API.getURL() + AppData.submitUserPunishmentEndpoint);
+        currentlyRunningMatchesEndpoint = client.target(AppData.API.getURL()).path(AppData.API.getCurrentlyRunningMatchesPath());
     }
 
-    public List<Punishment> getActiveUserPunishments(UUID uuid) {
-        List<Punishment> cached = NervePlugin.getInstance().getPunishmentCache().getCachedActivePunishments(uuid);
-        if (cached != null)
-            return cached;
-
-        WebTarget endpoint = activeUserPunishmentsEndpoint.resolveTemplate("uuid", uuid);
+    public List<Match> getCurrentlyRunningMatches() {
+        WebTarget endpoint = currentlyRunningMatchesEndpoint;
         Invocation.Builder builder = endpoint.request(MediaType.APPLICATION_JSON);
 
-        return NervePlugin.getInstance().getPunishmentCache().cacheActive(uuid, builder.get(new GenericType<List<Punishment>>() {
-        }));
-    }
-
-    public List<Punishment> getUserPunishments(UUID uuid) {
-        List<Punishment> cached = NervePlugin.getInstance().getPunishmentCache().getCachedAllPunishments(uuid);
-        if (cached != null)
-            return cached;
-
-        WebTarget endpoint = userPunishmentsEndpoint.resolveTemplate("uuid", uuid);
-        Invocation.Builder builder = endpoint.request(MediaType.APPLICATION_JSON);
-
-        return NervePlugin.getInstance().getPunishmentCache().cacheAll(uuid, builder.get(new GenericType<List<Punishment>>() {
-        }));
-    }
-
-    public void submitPunishment(Punishment punishment) {
-        NervePlugin.getInstance().getPunishmentCache().invalidateCache(punishment.getPlayer());
-
-        WebTarget endpoint = submitUserPunishmentEndpoint.resolveTemplate("uuid", punishment.getPlayer());
-        Invocation.Builder builder = endpoint.request(MediaType.APPLICATION_JSON);
-
-        Response response = builder.post(Entity.entity(punishment, MediaType.APPLICATION_JSON));
-        if (response.getStatus() != 200 && response.getStatus() != 201)
-            System.out.println("[Nerve] Error adding punishment for " + punishment.getPlayer() + " for " + punishment.getReason() + "\n" + response.readEntity(String.class));
+        return builder.get(new GenericType<List<Match>>() {
+        });
     }
 
 }

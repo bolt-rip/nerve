@@ -1,21 +1,7 @@
-discord:
-  token: invalid-token
-  channel-id: "-1"
-
 api:
   url: https://localhost:3000/v1/
   key: authorisation-key
+  currently-running-matches: ranked/servers
 
-features:
-- staff-chat:
-    servers: # which servers this feature is enabled on. glob, regex & server names (case sensitive) are supported. use a - at the start to negate the rule.
-    - glob:**
-- private-messages:
-    servers:
-    - glob:**
-- punishments:
-    servers:
-    - glob:**
-- report:
-    servers:
-    - glob:**
+automove:
+  poll-duration: 15
