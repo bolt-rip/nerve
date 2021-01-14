@@ -10,8 +10,3 @@ redis:
 
 automove:
   poll-duration: 15
-
-private-server-config:
-  luckperms-password: tobefilled
-  luckperms-address: tobefilled
-  helm-repo-url: https://bolt:tobefilled@charts.bolt.rip

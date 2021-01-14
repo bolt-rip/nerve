@@ -55,9 +55,6 @@ public class PrivateServerRequester {
             JSONObject setValues = spec.getJSONObject("set");
 
             metadata.put("name", "private-" + name.toLowerCase().replaceAll("_", "-") + "-server");
-            spec.put("repo", AppData.PrivateServerConfig.getHelmRepoUrl());
-            setValues.put("luckperms.data.password", AppData.PrivateServerConfig.getLuckpermsPassword());
-            setValues.put("luckperms.data.address", AppData.PrivateServerConfig.getLuckpermsAddress());
             setValues.put("config.serverName", name);
             setValues.put("config.operators", name);
 
