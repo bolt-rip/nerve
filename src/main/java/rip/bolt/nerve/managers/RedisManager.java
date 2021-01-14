@@ -23,7 +23,11 @@ public class RedisManager {
 
         System.out.println("[Nerve] Connecting to Redis...");
         subscriber = new Jedis(AppData.Redis.getHost(), AppData.Redis.getPort());
+        if (!AppData.Redis.getPassword().isEmpty())
+            subscriber.auth(AppData.Redis.getPassword());
         publisher = new Jedis(AppData.Redis.getHost(), AppData.Redis.getPort());
+        if (!AppData.Redis.getPassword().isEmpty())
+            publisher.auth(AppData.Redis.getPassword());
 
         ProxyServer.getInstance().getScheduler().runAsync(NervePlugin.getInstance(), new Runnable() {
 

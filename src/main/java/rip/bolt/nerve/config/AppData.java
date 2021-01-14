@@ -44,6 +44,10 @@ public class AppData {
             return section.getString("host");
         }
 
+        public static String getPassword() {
+            return section.getString("password");
+        }
+
         public static int getPort() {
             return section.getInt("port");
         }
