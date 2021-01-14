@@ -50,4 +50,22 @@ public class AppData {
 
     }
 
+    public static class PrivateServerConfig {
+
+        private static ConfigSection section = NervePlugin.getInstance().getAppConfig().getSection("private-server-config");
+
+        public static String getLuckpermsPassword() {
+            return section.getString("luckperms-password");
+        }
+
+        public static String getLuckpermsAddress() {
+            return section.getString("luckperms-address");
+        }
+
+        public static String getHelmRepoUrl() {
+            return section.getString("helm-repo-url");
+        }
+
+    }
+
 }

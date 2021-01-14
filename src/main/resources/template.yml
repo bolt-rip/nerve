@@ -1,18 +1,17 @@
-apiVersion: helm.fluxcd.io/v1
-kind: HelmRelease
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
 metadata:
-  name: indicado
+  name: private-mitchiii--server
+  namespace: minecraft
 spec:
-  releaseName: indicado
-  wait: true
-  chart:
-    git: git@github.com:bolt-rip/k8s
-    ref: master
-    path: charts/privateserver
-  values:
-    config:
-      operators: "notch:jeb_"
-      # this value is commented because the default value is set in server.properties and it's better to modify it through the code if needed to change it
-      #maxPlayers: 20
-      # this value is commented because the default value is already 10 and it's better to modify it through the code if needed to change it
-      #downScalerTimeInMinutes: 10
+  chart: privateserver
+  repo: https://bolt:tobefilled@charts.bolt.rip
+  set:
+    luckperms.data.password: tobefilled
+    luckperms.data.address: tobefilled
+    config.serverName: "mitchiii_"
+    config.operators: "notch:jeb_"
+    # this value is commented because the default value is set in server.properties and it's better to modify it through the code if needed to change it
+    #config.maxPlayers: 20
+    # this value is commented because the default value is already 10 and it's better to modify it through the code if needed to change it
+    #config.downScalerTimeInMinutes: 10

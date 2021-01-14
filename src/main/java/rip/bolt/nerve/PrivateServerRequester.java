@@ -13,6 +13,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import rip.bolt.nerve.utils.MapUtils;
+import rip.bolt.nerve.config.AppData;
 
 public class PrivateServerRequester {
 
@@ -42,22 +43,25 @@ public class PrivateServerRequester {
         try {
             KubernetesClient client = new DefaultKubernetesClient();
 
-            CustomResourceDefinitionContext context = new CustomResourceDefinitionContext.Builder().withName("helmreleases.helm.fluxcd.io").withGroup("helm.fluxcd.io").withScope("Namespaced").withVersion("v1").withPlural("helmreleases").build();
+            CustomResourceDefinitionContext context = new CustomResourceDefinitionContext.Builder()
+                    .withName("helmcharts.helm.cattle.io").withGroup("helm.cattle.io").withScope("Namespaced")
+                    .withVersion("v1").withPlural("helmcharts").build();
 
             Map<String, Object> template = generateTemplate();
-            JSONObject helmReleaseJSONObject = new JSONObject(template);
+            JSONObject helmChartJSONObject = new JSONObject(template);
 
-            // it is needed to change it twice because without that the server name would be "minecraft-${name}"
-            // more info about that in https://docs.fluxcd.io/projects/helm-operator/en/stable/references/helmrelease-custom-resource/
-            JSONObject metadata = helmReleaseJSONObject.getJSONObject("metadata");
-            JSONObject spec = helmReleaseJSONObject.getJSONObject("spec");
-            JSONObject config = spec.getJSONObject("values").getJSONObject("config");
+            JSONObject metadata = helmChartJSONObject.getJSONObject("metadata");
+            JSONObject spec = helmChartJSONObject.getJSONObject("spec");
+            JSONObject setValues = spec.getJSONObject("set");
 
             metadata.put("name", "private-" + name.toLowerCase().replaceAll("_", "-") + "-server");
-            config.put("serverName", name);
-            config.put("operators", name);
+            spec.put("repo", AppData.PrivateServerConfig.getHelmRepoUrl());
+            setValues.put("luckperms.data.password", AppData.PrivateServerConfig.getLuckpermsPassword());
+            setValues.put("luckperms.data.address", AppData.PrivateServerConfig.getLuckpermsAddress());
+            setValues.put("config.serverName", name);
+            setValues.put("config.operators", name);
 
-            client.customResource(context).create("minecraft", helmReleaseJSONObject.toString());
+            client.customResource(context).create("minecraft", helmChartJSONObject.toString());
             client.close();
 
             return true;
