@@ -13,7 +13,6 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import rip.bolt.nerve.utils.MapUtils;
-import rip.bolt.nerve.config.AppData;
 
 public class PrivateServerRequester {
 

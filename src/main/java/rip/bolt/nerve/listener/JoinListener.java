@@ -39,7 +39,7 @@ public class JoinListener implements Listener {
         if (match == null)
             return;
 
-        ServerInfo assignedServer = ProxyServer.getInstance().getServerInfo(match.getServerName());
+        ServerInfo assignedServer = ProxyServer.getInstance().getServerInfo(match.getServer());
         if (assignedServer == null)
             return;
 

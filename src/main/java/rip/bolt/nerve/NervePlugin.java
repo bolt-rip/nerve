@@ -7,7 +7,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import rip.bolt.nerve.api.APIManager;
 import rip.bolt.nerve.commands.RequeueCommand;
-import rip.bolt.nerve.commands.ServerCommand;
+import rip.bolt.nerve.commands.PrivateCommand;
 import rip.bolt.nerve.config.Config;
 import rip.bolt.nerve.config.ConfigManager;
 import rip.bolt.nerve.listener.JoinListener;
@@ -46,7 +46,7 @@ public class NervePlugin extends Plugin {
         ProxyServer.getInstance().getPluginManager().registerListener(this, new RequeueResponseListener());
 
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new RequeueCommand());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new ServerCommand(privateServerManager));
+        ProxyServer.getInstance().getPluginManager().registerCommand(this, new PrivateCommand(privateServerManager));
 
         System.out.println("[Nerve] Nerve is now enabled!");
     }

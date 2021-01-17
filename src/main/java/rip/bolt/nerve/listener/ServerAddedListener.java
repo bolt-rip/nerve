@@ -12,6 +12,7 @@ import net.md_5.bungee.event.EventHandler;
 import rip.bolt.nerve.NervePlugin;
 import rip.bolt.nerve.api.definitions.Match;
 import rip.bolt.nerve.api.definitions.Participant;
+import rip.bolt.nerve.api.definitions.Team;
 import rip.bolt.nerve.managers.AutomoveManager;
 import rip.bolt.nerve.managers.PrivateServerManager;
 
@@ -50,18 +51,18 @@ public class ServerAddedListener implements Listener {
 
         Match match = automoveManager.getMatchFromServerName(serverInfo.getName());
         if (match != null) {
-            ServerInfo assignedServer = ProxyServer.getInstance().getServerInfo(match.getServerName());
+            ServerInfo assignedServer = ProxyServer.getInstance().getServerInfo(match.getServer());
             if (assignedServer == null)
                 return;
-            
-            // poll api
 
-            for (Participant participant : match.getParticipants()) {
-                ProxiedPlayer player = ProxyServer.getInstance().getPlayer(participant.getUUID());
-                if (player == null)
-                    continue;
+            for (Team team : match.getTeams()) {
+                for (Participant participant : team.getPlayers()) {
+                    ProxiedPlayer player = ProxyServer.getInstance().getPlayer(participant.getUUID());
+                    if (player == null)
+                        continue;
 
-                automoveManager.doLogic(player, assignedServer, match);
+                    automoveManager.doLogic(player, assignedServer, match);
+                }
             }
         } else {
             automoveManager.reportNullMatch(serverInfo.getName()); // move participants once we've got the match

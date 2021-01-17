@@ -15,6 +15,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import rip.bolt.nerve.NervePlugin;
 import rip.bolt.nerve.api.definitions.Match;
 import rip.bolt.nerve.api.definitions.Participant;
+import rip.bolt.nerve.api.definitions.Team;
 import rip.bolt.nerve.config.AppData;
 
 public class AutomoveManager {
@@ -33,7 +34,7 @@ public class AutomoveManager {
                     return;
 
                 for (Match match : latestPolledMatches) {
-                    boolean wasNullMatch = nullMatches.remove(match.getServerName()); // whether this match's server was in the list
+                    boolean wasNullMatch = nullMatches.remove(match.getServer()); // whether this match's server was in the list
                     if (!wasNullMatch)
                         continue;
 
@@ -41,13 +42,15 @@ public class AutomoveManager {
                     // polled since its creation, and so the match was null in onRankedServerAdd
                     // so let's move its players now that we've got a match object
 
-                    ServerInfo assignedServer = ProxyServer.getInstance().getServerInfo(match.getServerName());
-                    inner: for (Participant participant : match.getParticipants()) {
-                        ProxiedPlayer player = ProxyServer.getInstance().getPlayer(participant.getUUID());
-                        if (player == null)
-                            continue inner;
+                    ServerInfo assignedServer = ProxyServer.getInstance().getServerInfo(match.getServer());
+                    for (Team team : match.getTeams()) {
+                        inner: for (Participant participant : team.getPlayers()) {
+                            ProxiedPlayer player = ProxyServer.getInstance().getPlayer(participant.getUUID());
+                            if (player == null)
+                                continue inner;
 
-                        doLogic(player, assignedServer, match);
+                            doLogic(player, assignedServer, match);
+                        }
                     }
                 }
             }
@@ -59,7 +62,7 @@ public class AutomoveManager {
         Match match = getPlayerMatch(player.getUniqueId());
 
         if (match != null) {
-            ServerInfo assignedServer = ProxyServer.getInstance().getServerInfo(match.getServerName());
+            ServerInfo assignedServer = ProxyServer.getInstance().getServerInfo(match.getServer());
             if (assignedServer == null)
                 return;
 
@@ -72,9 +75,11 @@ public class AutomoveManager {
             return null;
 
         for (Match match : latestPolledMatches) {
-            for (Participant participant : match.getParticipants()) {
-                if (participant.getUUID().equals(uuid))
-                    return match;
+            for (Team team : match.getTeams()) {
+                for (Participant participant : team.getPlayers()) {
+                    if (participant.getUUID().equals(uuid))
+                        return match;
+                }
             }
         }
 
@@ -86,7 +91,7 @@ public class AutomoveManager {
             return null;
 
         for (Match match : latestPolledMatches) {
-            if (match.getServerName().equals(serverName))
+            if (match.getServer().equals(serverName))
                 return match;
         }
 
@@ -108,7 +113,7 @@ public class AutomoveManager {
         if (NervePlugin.isLobby(player.getServer().getInfo().getName())) {
             player.connect(assignedServer);
         } else {
-            TextComponent info = new TextComponent("Your ranked match on server " + match.getServerName() + " is starting soon! ");
+            TextComponent info = new TextComponent("Your ranked match on server " + match.getServer() + " is starting soon! ");
             info.setColor(ChatColor.GOLD);
 
             TextComponent click = new TextComponent("Click here to join.");
