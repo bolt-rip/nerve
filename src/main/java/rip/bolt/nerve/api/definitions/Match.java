@@ -28,8 +28,6 @@ public class Match {
 
     private MatchStatus status;
 
-    private boolean invalidate = false;
-
     public Match() {
 
     }
