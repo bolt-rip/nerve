@@ -2,6 +2,7 @@ package rip.bolt.nerve.api;
 
 import java.util.List;
 
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
@@ -25,11 +26,16 @@ public class APIManager {
     }
 
     public List<Match> getCurrentlyRunningMatches() {
-        WebTarget endpoint = currentlyRunningMatchesEndpoint;
-        Invocation.Builder builder = endpoint.request(MediaType.APPLICATION_JSON);
+        try {
+            WebTarget endpoint = currentlyRunningMatchesEndpoint;
+            Invocation.Builder builder = endpoint.request(MediaType.APPLICATION_JSON);
 
-        return builder.get(new GenericType<List<Match>>() {
-        });
+            return builder.get(new GenericType<List<Match>>() {
+            });
+        } catch (NotFoundException notFound) {
+            // ignore
+            return null;
+        }
     }
 
 }
