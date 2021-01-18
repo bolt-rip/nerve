@@ -12,7 +12,6 @@ import rip.bolt.nerve.config.ConfigManager;
 import rip.bolt.nerve.listener.JoinListener;
 import rip.bolt.nerve.listener.ServerAddedListener;
 import rip.bolt.nerve.managers.AutomoveManager;
-import rip.bolt.nerve.managers.PrivateServerManager;
 
 public class NervePlugin extends Plugin {
 
@@ -34,12 +33,11 @@ public class NervePlugin extends Plugin {
 
         apiManager = new APIManager();
         automoveManager = new AutomoveManager();
-        PrivateServerManager privateServerManager = new PrivateServerManager();
 
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new ServerAddedListener(privateServerManager));
+        ProxyServer.getInstance().getPluginManager().registerListener(this, new ServerAddedListener());
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinListener());
 
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new PrivateCommand(privateServerManager));
+        ProxyServer.getInstance().getPluginManager().registerCommand(this, new PrivateCommand());
 
         System.out.println("[Nerve] Nerve is now enabled!");
     }

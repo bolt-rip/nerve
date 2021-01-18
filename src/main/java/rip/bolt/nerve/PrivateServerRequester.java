@@ -42,9 +42,7 @@ public class PrivateServerRequester {
         try {
             KubernetesClient client = new DefaultKubernetesClient();
 
-            CustomResourceDefinitionContext context = new CustomResourceDefinitionContext.Builder()
-                    .withName("helmcharts.helm.cattle.io").withGroup("helm.cattle.io").withScope("Namespaced")
-                    .withVersion("v1").withPlural("helmcharts").build();
+            CustomResourceDefinitionContext context = new CustomResourceDefinitionContext.Builder().withName("helmcharts.helm.cattle.io").withGroup("helm.cattle.io").withScope("Namespaced").withVersion("v1").withPlural("helmcharts").build();
 
             Map<String, Object> template = generateTemplate();
             JSONObject helmChartJSONObject = new JSONObject(template);
@@ -68,8 +66,22 @@ public class PrivateServerRequester {
         }
     }
 
-    public static boolean status(ProxiedPlayer requester) {
-        return true;
+    public static boolean exists(ProxiedPlayer requester) {
+        try {
+            KubernetesClient client = new DefaultKubernetesClient();
+
+            CustomResourceDefinitionContext context = new CustomResourceDefinitionContext.Builder().withName("helmcharts.helm.cattle.io").withGroup("helm.cattle.io").withScope("Namespaced").withVersion("v1").withPlural("helmcharts").build();
+
+            Map<String, Object> helmCharts = client.customResource(context).list("minecraft");
+            client.close();
+
+            String k8sName = "private-" + requester.getName().toLowerCase().replaceAll("_", "-") + "-server";
+            return helmCharts.toString().contains(k8sName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
 }

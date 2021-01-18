@@ -8,15 +8,11 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import rip.bolt.nerve.PrivateServerRequester;
-import rip.bolt.nerve.managers.PrivateServerManager;
 
 public class PrivateCommand extends Command {
 
-    private PrivateServerManager manager;
-
-    public PrivateCommand(PrivateServerManager manager) {
+    public PrivateCommand() {
         super("private");
-        this.manager = manager;
     }
 
     @Override
@@ -55,16 +51,14 @@ public class PrivateCommand extends Command {
                 return;
             }
 
-            if (manager.hasRequested(player)) {
-                player.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "You have already requested a private server! Please wait a minute for it to start up."));
+            if (PrivateServerRequester.exists(player)) {
+                player.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "You have already requested a private server! Please wait for it to start up."));
                 return;
             }
 
             player.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "Requesting private server..."));
             if (!PrivateServerRequester.request(player.getName()))
                 player.sendMessage(TextComponent.fromLegacyText(ChatColor.RED + "An error occured while requesting your private server!"));
-            else // request succeeded
-                manager.request(player);
 
             return;
         } else if (args.length == 1) {
@@ -81,7 +75,7 @@ public class PrivateCommand extends Command {
                 return;
             }
 
-            if (manager.hasRequested(target)) {
+            if (PrivateServerRequester.exists(target)) {
                 sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + target.getName() + " has already requested a private server!"));
                 return;
             }
@@ -89,8 +83,6 @@ public class PrivateCommand extends Command {
             sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "Requesting private server for " + target.getName() + "..."));
             if (!PrivateServerRequester.request(target.getName()))
                 sender.sendMessage(TextComponent.fromLegacyText(ChatColor.RED + "An error occured while requesting a private server!"));
-            else
-                manager.request(target);
 
             return;
         }

@@ -14,21 +14,21 @@ import rip.bolt.nerve.api.definitions.Match;
 import rip.bolt.nerve.api.definitions.Participant;
 import rip.bolt.nerve.api.definitions.Team;
 import rip.bolt.nerve.managers.AutomoveManager;
-import rip.bolt.nerve.managers.PrivateServerManager;
 
 public class ServerAddedListener implements Listener {
 
-    private PrivateServerManager privateServerManager;
     private AutomoveManager automoveManager;
 
-    public ServerAddedListener(PrivateServerManager manager) {
-        this.privateServerManager = manager;
+    public ServerAddedListener() {
         this.automoveManager = NervePlugin.getInstance().getAutomoveManager();
     }
 
     @EventHandler
     public void onPrivateServerAdd(PostAddServerEvent event) {
         ServerInfo serverInfo = event.getServerInfo();
+        if (serverInfo.getName().startsWith("ranked-"))
+            return;
+
         ProxiedPlayer requester = ProxyServer.getInstance().getPlayer(serverInfo.getName());
 
         if (requester != null) {
@@ -38,8 +38,6 @@ public class ServerAddedListener implements Listener {
                 requester.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "Your private server has started up!"));
                 requester.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "Type /server " + serverInfo.getName() + " to join."));
             }
-
-            privateServerManager.serverStartup(requester);
         }
     }
 
