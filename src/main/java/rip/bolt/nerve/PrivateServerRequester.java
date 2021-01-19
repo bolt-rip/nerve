@@ -42,23 +42,20 @@ public class PrivateServerRequester {
         try {
             KubernetesClient client = new DefaultKubernetesClient();
 
-            CustomResourceDefinitionContext context = new CustomResourceDefinitionContext.Builder().withName("helmreleases.helm.fluxcd.io").withGroup("helm.fluxcd.io").withScope("Namespaced").withVersion("v1").withPlural("helmreleases").build();
+            CustomResourceDefinitionContext context = new CustomResourceDefinitionContext.Builder().withName("helmcharts.helm.cattle.io").withGroup("helm.cattle.io").withScope("Namespaced").withVersion("v1").withPlural("helmcharts").build();
 
             Map<String, Object> template = generateTemplate();
-            JSONObject helmReleaseJSONObject = new JSONObject(template);
+            JSONObject helmChartJSONObject = new JSONObject(template);
 
-            // it is needed to change it twice because without that the server name would be "minecraft-${name}"
-            // more info about that in https://docs.fluxcd.io/projects/helm-operator/en/stable/references/helmrelease-custom-resource/
-            JSONObject metadata = helmReleaseJSONObject.getJSONObject("metadata");
-            JSONObject spec = helmReleaseJSONObject.getJSONObject("spec");
-            JSONObject config = spec.getJSONObject("values").getJSONObject("config");
+            JSONObject metadata = helmChartJSONObject.getJSONObject("metadata");
+            JSONObject spec = helmChartJSONObject.getJSONObject("spec");
+            JSONObject setValues = spec.getJSONObject("set");
 
             metadata.put("name", "private-" + name.toLowerCase().replaceAll("_", "-") + "-server");
-            spec.put("releaseName", "private-" + name.toLowerCase().replaceAll("_", "-") + "-server");
-            config.put("serverName", name);
-            config.put("operators", name);
+            setValues.put("config.serverName", name);
+            setValues.put("config.operators", name);
 
-            client.customResource(context).create("minecraft", helmReleaseJSONObject.toString());
+            client.customResource(context).create("minecraft", helmChartJSONObject.toString());
             client.close();
 
             return true;
@@ -69,8 +66,22 @@ public class PrivateServerRequester {
         }
     }
 
-    public static boolean status(ProxiedPlayer requester) {
-        return true;
+    public static boolean exists(ProxiedPlayer requester) {
+        try {
+            KubernetesClient client = new DefaultKubernetesClient();
+
+            CustomResourceDefinitionContext context = new CustomResourceDefinitionContext.Builder().withName("helmcharts.helm.cattle.io").withGroup("helm.cattle.io").withScope("Namespaced").withVersion("v1").withPlural("helmcharts").build();
+
+            Map<String, Object> helmCharts = client.customResource(context).list("minecraft");
+            client.close();
+
+            String k8sName = "private-" + requester.getName().toLowerCase().replaceAll("_", "-") + "-server";
+            return helmCharts.toString().contains(k8sName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
 }

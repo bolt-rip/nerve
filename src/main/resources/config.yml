@@ -1,7 +1,7 @@
-discord:
-  token: invalid-token
-  channel-id: "-1"
-
 api:
   url: https://localhost:3000/v1/
   key: authorisation-key
+  currently-running-matches: ranked/servers
+
+automove:
+  poll-duration: 15

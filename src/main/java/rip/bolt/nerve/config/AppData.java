@@ -4,26 +4,16 @@ import rip.bolt.nerve.NervePlugin;
 
 public class AppData {
 
-    public static class Discord {
-
-        private static ConfigSection section = NervePlugin.getInstance().getAppConfig().getSection("discord");
-
-        public static String getToken() {
-            return section.getString("token");
-        }
-
-        public static String getChannelId() {
-            return section.getString("channel-id");
-        }
-
-    }
-
     public static class API {
 
         private static ConfigSection section = NervePlugin.getInstance().getAppConfig().getSection("api");
 
         public static String getURL() {
             return section.getString("url");
+        }
+        
+        public static String getCurrentlyRunningMatchesPath() {
+            return section.getString("currently-running-matches");
         }
 
         public static String getKey() {
@@ -32,7 +22,14 @@ public class AppData {
 
     }
 
-    public static String userPunishmentEndpoint = "users/{uuid}/punishments";
-    public static String submitUserPunishmentEndpoint = "users/{uuid}/punishments/new";
+    public static class AutoMove {
+
+        private static ConfigSection section = NervePlugin.getInstance().getAppConfig().getSection("automove");
+
+        public static int getPollDuration() {
+            return section.getInt("poll-duration");
+        }
+
+    }
 
 }
