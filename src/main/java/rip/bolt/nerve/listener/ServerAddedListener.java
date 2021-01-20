@@ -1,9 +1,10 @@
 package rip.bolt.nerve.listener;
 
-import com.sk89q.minecraft.util.commands.ChatColor;
-
 import de.craftmania.dockerizedcraft.server.updater.events.PostAddServerEvent;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ClickEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -35,8 +36,17 @@ public class ServerAddedListener implements Listener {
             if (NervePlugin.isLobby(requester.getServer().getInfo().getName())) {
                 requester.connect(serverInfo);
             } else {
-                requester.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "Your private server has started up!"));
-                requester.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "Type /server " + serverInfo.getName() + " to join."));
+                TextComponent info = new TextComponent("Your private server has started up! ");
+                info.setColor(ChatColor.GOLD);
+
+                TextComponent click = new TextComponent("Click here to join.");
+                click.setColor(ChatColor.GOLD);
+                click.setBold(true);
+
+                TextComponent clickableText = new TextComponent(info, click);
+                clickableText.setClickEvent(new ClickEvent(Action.RUN_COMMAND, "/server " + serverInfo.getName()));
+
+                requester.sendMessage(info);
             }
         }
     }
