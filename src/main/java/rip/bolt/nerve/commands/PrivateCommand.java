@@ -70,8 +70,7 @@ public class PrivateCommand extends Command {
 
             ServerInfo conflictingServer = ProxyServer.getInstance().getServerInfo(target.getName());
             if (conflictingServer != null) {
-                target.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "Connecting you to " + conflictingServer.getName() + "..."));
-                target.connect(conflictingServer);
+                sender.sendMessage(TextComponent.fromLegacyText(ChatColor.RED + target.getName() + "'s private server is already running!"));
                 return;
             }
 
