@@ -16,7 +16,7 @@ jobs:
       - name: Build jar
         run: mvn --batch-mode --update-snapshots verify
       - name: Move generated jar file
-        run: mv target/nerve-*.jar nerve.jar
+        run: mv target/nerve-*-shaded.jar nerve.jar
       - name: Create Release
         id: create_release
         if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master')
