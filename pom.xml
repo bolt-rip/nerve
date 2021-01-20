@@ -106,7 +106,7 @@
 		<dependency>
 			<groupId>de.craftmania</groupId>
 			<artifactId>DockerizedCraft</artifactId>
-			<version>0.2.2</version>
+			<version>0.2.6</version>
 		</dependency>
 	</dependencies>
 
