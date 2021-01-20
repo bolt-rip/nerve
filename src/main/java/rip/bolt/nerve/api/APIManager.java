@@ -32,8 +32,11 @@ public class APIManager {
 
             return builder.get(new GenericType<List<Match>>() {
             });
-        } catch (NotFoundException notFound) {
+        } catch (NotFoundException e) {
             // ignore
+            return null;
+        } catch (Throwable t) {
+            t.printStackTrace();
             return null;
         }
     }
