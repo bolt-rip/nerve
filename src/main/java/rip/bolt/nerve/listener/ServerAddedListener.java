@@ -11,18 +11,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import rip.bolt.nerve.NervePlugin;
-import rip.bolt.nerve.api.definitions.Match;
-import rip.bolt.nerve.api.definitions.Participant;
-import rip.bolt.nerve.api.definitions.Team;
-import rip.bolt.nerve.managers.AutomoveManager;
 
 public class ServerAddedListener implements Listener {
-
-    private AutomoveManager automoveManager;
-
-    public ServerAddedListener() {
-        this.automoveManager = NervePlugin.getInstance().getAutomoveManager();
-    }
 
     @EventHandler
     public void onPrivateServerAdd(PostAddServerEvent event) {
@@ -31,7 +21,6 @@ public class ServerAddedListener implements Listener {
             return;
 
         ProxiedPlayer requester = ProxyServer.getInstance().getPlayer(serverInfo.getName());
-
         if (requester != null) {
             if (NervePlugin.isLobby(requester.getServer().getInfo().getName())) {
                 requester.connect(serverInfo);
@@ -48,32 +37,6 @@ public class ServerAddedListener implements Listener {
 
                 requester.sendMessage(info);
             }
-        }
-    }
-
-    @EventHandler
-    public void onRankedServerAdd(PostAddServerEvent event) {
-        ServerInfo serverInfo = event.getServerInfo();
-        if (!serverInfo.getName().startsWith("ranked-"))
-            return;
-
-        Match match = automoveManager.getMatchFromServerName(serverInfo.getName());
-        if (match != null) {
-            ServerInfo assignedServer = ProxyServer.getInstance().getServerInfo(match.getServer());
-            if (assignedServer == null)
-                return;
-
-            for (Team team : match.getTeams()) {
-                for (Participant participant : team.getPlayers()) {
-                    ProxiedPlayer player = ProxyServer.getInstance().getPlayer(participant.getUUID());
-                    if (player == null)
-                        continue;
-
-                    automoveManager.doLogic(player, assignedServer, match);
-                }
-            }
-        } else {
-            automoveManager.reportNullMatch(serverInfo.getName()); // move participants once we've got the match
         }
     }
 

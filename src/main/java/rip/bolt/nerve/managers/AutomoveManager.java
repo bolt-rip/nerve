@@ -20,11 +20,11 @@ import rip.bolt.nerve.config.AppData;
 
 public class AutomoveManager {
 
-    private List<String> nullMatches;
+    private List<String> previousMatches;
     private List<Match> latestPolledMatches;
 
     public AutomoveManager() {
-        nullMatches = new ArrayList<String>();
+        previousMatches = new ArrayList<String>();
         ProxyServer.getInstance().getScheduler().schedule(NervePlugin.getInstance(), new Runnable() {
 
             @Override
@@ -34,13 +34,12 @@ public class AutomoveManager {
                     return;
 
                 for (Match match : latestPolledMatches) {
-                    boolean wasNullMatch = nullMatches.remove(match.getServer()); // whether this match's server was in the list
-                    if (!wasNullMatch)
+                    boolean existedInLastPoll = previousMatches.remove(match.getMatchId()); // whether this match's server was in the list
+                    if (existedInLastPoll)
                         continue;
 
-                    // when the server for this match was created and added to bungee, we hadn't
-                    // polled since its creation, and so the match was null in onRankedServerAdd
-                    // so let's move its players now that we've got a match object
+                    // this match has just been put into the LOADED state
+                    // so let's notify players that their match is ready
 
                     ServerInfo assignedServer = ProxyServer.getInstance().getServerInfo(match.getServer());
                     for (Team team : match.getTeams()) {
@@ -52,7 +51,11 @@ public class AutomoveManager {
                             doLogic(player, assignedServer, match);
                         }
                     }
+
                 }
+
+                for (Match match : latestPolledMatches)
+                    previousMatches.add(match.getMatchId());
             }
 
         }, AppData.AutoMove.getPollDuration(), AppData.AutoMove.getPollDuration(), TimeUnit.SECONDS);
@@ -100,10 +103,6 @@ public class AutomoveManager {
 
     public List<Match> getLatestPolledMatches() {
         return latestPolledMatches;
-    }
-
-    public void reportNullMatch(String server) {
-        nullMatches.add(server);
     }
 
     public void doLogic(ProxiedPlayer player, ServerInfo assignedServer, Match match) {
