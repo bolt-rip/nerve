@@ -55,7 +55,7 @@ public class AutomoveManager {
                 }
             }
 
-        }, AppData.AutoMove.getPollDuration(), TimeUnit.SECONDS);
+        }, AppData.AutoMove.getPollDuration(), AppData.AutoMove.getPollDuration(), TimeUnit.SECONDS);
     }
 
     public void handleMove(ProxiedPlayer player) {

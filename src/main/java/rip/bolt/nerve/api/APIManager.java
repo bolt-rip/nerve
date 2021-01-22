@@ -1,5 +1,6 @@
 package rip.bolt.nerve.api;
 
+import java.net.ConnectException;
 import java.util.List;
 
 import javax.ws.rs.NotFoundException;
@@ -36,6 +37,9 @@ public class APIManager {
             // ignore
             return null;
         } catch (Throwable t) {
+            if (t.getCause() instanceof ConnectException)
+                return null;
+
             t.printStackTrace();
             return null;
         }
