@@ -1,32 +1,35 @@
 package rip.bolt.nerve.api.definitions;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Team {
 
     private String name;
 
-    @JsonProperty("players")
-    private List<Participant> participants;
+    private List<Participation> participations;
 
     public Team() {
     }
 
-    public Team(String name, List<Participant> participants) {
+    public Team(String name, List<Participation> participations) {
         this.name = name;
-        this.participants = participants;
+        this.participations = participations;
     }
 
     public String getName() {
         return name;
     }
 
-    public List<Participant> getPlayers() {
-        return this.participants;
+    public List<Participation> getParticipations() {
+        return participations;
+    }
+
+    public List<User> getPlayers() {
+        return participations.stream().map(Participation::getUser).collect(Collectors.toList());
     }
 
 }

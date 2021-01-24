@@ -5,7 +5,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Participant {
+public class User {
 
     private String uuid;
 
