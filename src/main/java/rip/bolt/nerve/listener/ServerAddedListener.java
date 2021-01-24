@@ -1,16 +1,13 @@
 package rip.bolt.nerve.listener;
 
 import de.craftmania.dockerizedcraft.server.updater.events.PostAddServerEvent;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ClickEvent.Action;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import rip.bolt.nerve.NervePlugin;
+import rip.bolt.nerve.utils.Messages;
 
 public class ServerAddedListener implements Listener {
 
@@ -22,21 +19,10 @@ public class ServerAddedListener implements Listener {
 
         ProxiedPlayer requester = ProxyServer.getInstance().getPlayer(serverInfo.getName());
         if (requester != null) {
-            if (NervePlugin.isLobby(requester.getServer().getInfo().getName())) {
+            if (NervePlugin.isLobby(requester.getServer().getInfo().getName()))
                 requester.connect(serverInfo);
-            } else {
-                TextComponent info = new TextComponent("Your private server has started up! ");
-                info.setColor(ChatColor.GOLD);
-
-                TextComponent click = new TextComponent("Click here to join.");
-                click.setColor(ChatColor.GOLD);
-                click.setBold(true);
-
-                TextComponent clickableText = new TextComponent(info, click);
-                clickableText.setClickEvent(new ClickEvent(Action.RUN_COMMAND, "/server " + serverInfo.getName()));
-
-                requester.sendMessage(info);
-            }
+            else
+                requester.sendMessage(Messages.privateServerStarted(serverInfo.getName()));
         }
     }
 
