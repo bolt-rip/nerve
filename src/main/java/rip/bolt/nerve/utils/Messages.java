@@ -19,7 +19,7 @@ public class Messages {
     }
 
     public static BaseComponent[] playerJoinLeaveQueue(String player, int inQueue, int queueSize, boolean joined, boolean targetIsReceiving) {
-        return new BaseComponent[] { PREFIX, colour(targetIsReceiving ? ChatColor.GREEN : ChatColor.YELLOW, targetIsReceiving ? "You" : player), colour(ChatColor.GREEN, (joined ? " joined" : " left") + " the queue  "), colour(ChatColor.WHITE, String.valueOf(inQueue)), colour(ChatColor.DARK_GRAY, "/"), colour(ChatColor.GRAY, String.valueOf(queueSize)) };
+        return new BaseComponent[] { PREFIX, colour(targetIsReceiving ? ChatColor.GREEN : ChatColor.YELLOW, targetIsReceiving ? "You" : player), colour(ChatColor.GREEN, (joined ? " joined" : " left") + " the queue"), colour(ChatColor.DARK_GRAY, " | "), colour(ChatColor.WHITE, String.valueOf(inQueue)), colour(ChatColor.DARK_GRAY, "/"), colour(ChatColor.GRAY, String.valueOf(queueSize)) };
     }
 
     public static TextComponent colour(ChatColor colour, String text) {

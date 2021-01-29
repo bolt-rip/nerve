@@ -27,7 +27,7 @@ public class AppData {
         private static ConfigSection section = NervePlugin.getInstance().getAppConfig().getSection("redis");
 
         public static boolean isEnabled() {
-            return section.getBoolean("enabled");
+            return section.getBoolean("enabled", false);
         }
 
         public static String getHost() {
@@ -39,7 +39,11 @@ public class AppData {
         }
 
         public static int getPort() {
-            return section.getInt("port");
+            return section.getInt("port", 6379);
+        }
+
+        public static int getReconnectSleep() {
+            return section.getInt("reconnect-sleep", 15);
         }
 
     }
@@ -49,7 +53,7 @@ public class AppData {
         private static ConfigSection section = NervePlugin.getInstance().getAppConfig().getSection("automove");
 
         public static int getPollDuration() {
-            return section.getInt("poll-duration");
+            return section.getInt("poll-duration", 15);
         }
 
     }
