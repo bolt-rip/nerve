@@ -10,8 +10,10 @@ import rip.bolt.nerve.commands.PrivateCommand;
 import rip.bolt.nerve.config.Config;
 import rip.bolt.nerve.config.ConfigManager;
 import rip.bolt.nerve.listener.JoinListener;
+import rip.bolt.nerve.listener.QueueListener;
 import rip.bolt.nerve.listener.ServerAddedListener;
 import rip.bolt.nerve.managers.AutomoveManager;
+import rip.bolt.nerve.redis.RedisManager;
 
 public class NervePlugin extends Plugin {
 
@@ -20,6 +22,7 @@ public class NervePlugin extends Plugin {
 
     protected APIManager apiManager;
     protected AutomoveManager automoveManager;
+    protected RedisManager redisManager;
 
     protected Config appConfig;
 
@@ -33,9 +36,11 @@ public class NervePlugin extends Plugin {
 
         apiManager = new APIManager();
         automoveManager = new AutomoveManager();
+        redisManager = new RedisManager();
 
         ProxyServer.getInstance().getPluginManager().registerListener(this, new ServerAddedListener());
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinListener());
+        ProxyServer.getInstance().getPluginManager().registerListener(this, new QueueListener());
 
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new PrivateCommand());
 
@@ -59,6 +64,10 @@ public class NervePlugin extends Plugin {
 
     public AutomoveManager getAutomoveManager() {
         return automoveManager;
+    }
+
+    public RedisManager getRedisManager() {
+        return redisManager;
     }
 
     public static NervePlugin getInstance() {

@@ -34,6 +34,10 @@
 			<name>jcenter-bintray</name>
 			<url>https://jcenter.bintray.com</url>
 		</repository>
+		<repository>
+			<id>exceptionflug</id>
+			<url>https://mvn.exceptionflug.de/repository/exceptionflug-public/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -51,7 +55,9 @@
 		<dependency>
 			<groupId>net.md-5</groupId>
 			<artifactId>bungeecord-api</artifactId>
-			<version>1.8-SNAPSHOT</version>
+			<version>1.16-R0.4-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.dv8tion</groupId>
@@ -108,6 +114,11 @@
 			<artifactId>DockerizedCraft</artifactId>
 			<version>0.2.6</version>
 		</dependency>
+		<dependency>
+			<groupId>de.exceptionflug</groupId>
+			<artifactId>protocolize-world</artifactId>
+			<version>1.6.7-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -152,6 +163,7 @@
 								<excludes>
 									<exclude>net.md-5:bungeecord-api</exclude>
 									<exclude>de.craftmania:DockerizedCraft</exclude>
+									<exclude>de.exceptionflug:protocolize-world</exclude>
 								</excludes>
 							</artifactSet>
 						</configuration>

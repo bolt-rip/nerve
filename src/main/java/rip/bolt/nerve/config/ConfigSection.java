@@ -143,7 +143,7 @@ public class ConfigSection {
      * @return Value of the key.
      */
     public String getString(String key) {
-        return get(key).toString();
+        return getString(key, null);
     }
 
     /**
@@ -154,7 +154,7 @@ public class ConfigSection {
      */
     public String getString(String key, String def) {
         Object val = get(key);
-        return (val == null ? def : val).toString();
+        return val == null ? def : val.toString();
     }
 
     /**

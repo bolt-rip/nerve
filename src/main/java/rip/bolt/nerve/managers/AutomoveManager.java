@@ -14,6 +14,7 @@ import rip.bolt.nerve.api.definitions.User;
 import rip.bolt.nerve.api.definitions.Team;
 import rip.bolt.nerve.config.AppData;
 import rip.bolt.nerve.utils.Messages;
+import rip.bolt.nerve.utils.Sounds;
 
 public class AutomoveManager {
 
@@ -106,10 +107,12 @@ public class AutomoveManager {
         if (player.getServer().getInfo() == assignedServer) // no need
             return;
 
-        if (NervePlugin.isLobby(player.getServer().getInfo().getName()))
+        if (NervePlugin.isLobby(player.getServer().getInfo().getName())) {
             player.connect(assignedServer);
-        else
+        } else {
+            Sounds.playDing(player);
             player.sendMessage(Messages.rankedMatchReady(assignedServer.getName()));
+        }
     }
 
 }

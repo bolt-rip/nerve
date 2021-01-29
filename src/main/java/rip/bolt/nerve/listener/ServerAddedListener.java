@@ -8,6 +8,7 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import rip.bolt.nerve.NervePlugin;
 import rip.bolt.nerve.utils.Messages;
+import rip.bolt.nerve.utils.Sounds;
 
 public class ServerAddedListener implements Listener {
 
@@ -19,10 +20,12 @@ public class ServerAddedListener implements Listener {
 
         ProxiedPlayer requester = ProxyServer.getInstance().getPlayer(serverInfo.getName());
         if (requester != null) {
-            if (NervePlugin.isLobby(requester.getServer().getInfo().getName()))
+            if (NervePlugin.isLobby(requester.getServer().getInfo().getName())) {
                 requester.connect(serverInfo);
-            else
+            } else {
+                Sounds.playDing(requester);
                 requester.sendMessage(Messages.privateServerStarted(serverInfo.getName()));
+            }
         }
     }
 

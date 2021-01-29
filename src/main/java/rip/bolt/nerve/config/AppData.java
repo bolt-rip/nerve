@@ -11,13 +11,35 @@ public class AppData {
         public static String getURL() {
             return section.getString("url");
         }
-        
+
         public static String getCurrentlyRunningMatchesPath() {
             return section.getString("currently-running-matches");
         }
 
         public static String getKey() {
             return section.getString("key");
+        }
+
+    }
+
+    public static class Redis {
+
+        private static ConfigSection section = NervePlugin.getInstance().getAppConfig().getSection("redis");
+
+        public static boolean isEnabled() {
+            return section.getBoolean("enabled");
+        }
+
+        public static String getHost() {
+            return section.getString("host");
+        }
+
+        public static String getPassword() {
+            return section.getString("password");
+        }
+
+        public static int getPort() {
+            return section.getInt("port");
         }
 
     }
