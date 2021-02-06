@@ -1,9 +1,7 @@
 package rip.bolt.nerve.managers;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -12,51 +10,15 @@ import rip.bolt.nerve.NervePlugin;
 import rip.bolt.nerve.api.definitions.Match;
 import rip.bolt.nerve.api.definitions.User;
 import rip.bolt.nerve.api.definitions.Team;
-import rip.bolt.nerve.config.AppData;
 import rip.bolt.nerve.utils.Messages;
 import rip.bolt.nerve.utils.Sounds;
 
 public class AutomoveManager {
 
-    private List<String> previousMatches;
-    private List<Match> latestPolledMatches;
+    private HashMap<String, Match> matches;
 
     public AutomoveManager() {
-        previousMatches = new ArrayList<String>();
-        ProxyServer.getInstance().getScheduler().schedule(NervePlugin.getInstance(), new Runnable() {
-
-            @Override
-            public void run() {
-                latestPolledMatches = NervePlugin.getInstance().getAPIManager().getCurrentlyRunningMatches();
-                if (latestPolledMatches == null)
-                    return;
-
-                for (Match match : latestPolledMatches) {
-                    boolean existedInLastPoll = previousMatches.remove(match.getMatchId()); // whether this match's server was in the list
-                    if (existedInLastPoll)
-                        continue;
-
-                    // this match has just been put into the LOADED state
-                    // so let's notify players that their match is ready
-
-                    ServerInfo assignedServer = ProxyServer.getInstance().getServerInfo(match.getServer());
-                    for (Team team : match.getTeams()) {
-                        inner: for (User participant : team.getPlayers()) {
-                            ProxiedPlayer player = ProxyServer.getInstance().getPlayer(participant.getUUID());
-                            if (player == null)
-                                continue inner;
-
-                            doLogic(player, assignedServer, match);
-                        }
-                    }
-
-                }
-
-                for (Match match : latestPolledMatches)
-                    previousMatches.add(match.getMatchId());
-            }
-
-        }, AppData.AutoMove.getPollDuration(), AppData.AutoMove.getPollDuration(), TimeUnit.SECONDS);
+        matches = new HashMap<String, Match>();
     }
 
     public void handleMove(ProxiedPlayer player) {
@@ -72,10 +34,10 @@ public class AutomoveManager {
     }
 
     public Match getPlayerMatch(UUID uuid) {
-        if (latestPolledMatches == null)
+        if (matches == null)
             return null;
 
-        for (Match match : latestPolledMatches) {
+        for (Match match : matches.values()) {
             for (Team team : match.getTeams()) {
                 for (User participant : team.getPlayers()) {
                     if (participant.getUUID().equals(uuid))
@@ -88,10 +50,10 @@ public class AutomoveManager {
     }
 
     public Match getMatchFromServerName(String serverName) {
-        if (latestPolledMatches == null)
+        if (matches == null)
             return null;
 
-        for (Match match : latestPolledMatches) {
+        for (Match match : matches.values()) {
             if (match.getServer().equals(serverName))
                 return match;
         }
@@ -99,9 +61,26 @@ public class AutomoveManager {
         return null;
     }
 
-    public List<Match> getLatestPolledMatches() {
-        return latestPolledMatches;
+    public HashMap<String, Match> getLatestMatches() {
+        return matches;
     }
+
+    public Match addMatch(Match match) {
+        ServerInfo assignedServer = ProxyServer.getInstance().getServerInfo(match.getServer());
+        for (Team team : match.getTeams()) {
+            inner: for (User participant : team.getPlayers()) {
+                ProxiedPlayer player = ProxyServer.getInstance().getPlayer(participant.getUUID());
+                if (player == null)
+                    continue inner;
+
+                doLogic(player, assignedServer, match);
+            }
+        }
+
+        return matches.put(match.getMatchId(), match);
+    }
+
+    public Match removeMatch(Match match) { return matches.remove(match.getMatchId()); }
 
     public void doLogic(ProxiedPlayer player, ServerInfo assignedServer, Match match) {
         if (player.getServer().getInfo() == assignedServer) // no need

@@ -18,7 +18,7 @@ public class RedisManager {
     private JedisPool pool;
 
     private static List<String> publisherChannels = Arrays.asList();
-    private static String[] subscriberChannels = { "queue" };
+    private static String[] subscriberChannels = { "queue", "match" };
 
     public RedisManager() {
         if (!AppData.Redis.isEnabled())
