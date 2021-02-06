@@ -28,6 +28,9 @@ public class QueueListener implements Listener {
 
         UUID userUUID = UUID.fromString(user.getString("uuid"));
         String userUsername = user.getString("username");
+        ProxiedPlayer proxiedUser = ProxyServer.getInstance().getPlayer(userUUID);
+        if (proxiedUser != null)
+            userUsername = proxiedUser.getName();
 
         JSONArray players = data.getJSONArray("players");
         if (players == null)
@@ -37,11 +40,18 @@ public class QueueListener implements Listener {
         int queueSize = data.getInt("limit");
 
         for (int i = 0; i < inQueue; i++) {
-            ProxiedPlayer target = ProxyServer.getInstance().getPlayer(UUID.fromString(players.getString(i)));
-            if (target == null)
+            Object value = players.get(i);
+            if (value == null || !(value instanceof String))
                 continue;
 
-            target.sendMessage(Messages.playerJoinLeaveQueue(userUsername, inQueue, queueSize, joined, target.getUniqueId().equals(userUUID)));
+            ProxiedPlayer target = ProxyServer.getInstance().getPlayer(UUID.fromString(value.toString()));
+            if (target != null)
+                target.sendMessage(Messages.playerJoinLeaveQueue(userUsername, inQueue, queueSize, joined, target.getUniqueId().equals(userUUID)));
+        }
+
+        if (!joined) {
+            if (proxiedUser != null)
+                proxiedUser.sendMessage(Messages.playerJoinLeaveQueue(userUsername, inQueue, queueSize, joined, true));
         }
     }
 
