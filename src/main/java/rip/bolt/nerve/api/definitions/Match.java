@@ -1,6 +1,5 @@
 package rip.bolt.nerve.api.definitions;
 
-import java.time.Instant;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -23,18 +22,7 @@ public class Match {
 
     private String winner;
 
-    private Instant startedAt;
-    private Instant endedAt;
-
     private MatchStatus status;
-
-    public Match() {
-
-    }
-
-    public Match(String matchId) {
-        this.matchId = matchId;
-    }
 
     public String getMatchId() {
         return matchId;
@@ -74,22 +62,6 @@ public class Match {
 
     public void setWinner(String winner) {
         this.winner = winner;
-    }
-
-    public Instant getStartedAt() {
-        return startedAt;
-    }
-
-    public void setStartedAt(Instant startedAt) {
-        this.startedAt = startedAt;
-    }
-
-    public Instant getEndedAt() {
-        return endedAt;
-    }
-
-    public void setEndedAt(Instant endedAt) {
-        this.endedAt = endedAt;
     }
 
     public MatchStatus getStatus() {
