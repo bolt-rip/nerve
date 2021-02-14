@@ -10,18 +10,18 @@ import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import rip.bolt.nerve.NervePlugin;
+import rip.bolt.nerve.api.MatchStatus;
 import rip.bolt.nerve.api.definitions.Match;
-import rip.bolt.nerve.managers.AutomoveManager;
+import rip.bolt.nerve.managers.MatchRegistry;
 
 public class JoinListener implements Listener {
 
-    private AutomoveManager automoveManager;
+    private MatchRegistry registry;
     private List<ProxiedPlayer> connectingPlayers;
 
-    public JoinListener() {
-        this.automoveManager = NervePlugin.getInstance().getAutomoveManager();
-        connectingPlayers = new ArrayList<ProxiedPlayer>();
+    public JoinListener(MatchRegistry registry) {
+        this.registry = registry;
+        this.connectingPlayers = new ArrayList<ProxiedPlayer>();
     }
 
     @EventHandler
@@ -35,15 +35,18 @@ public class JoinListener implements Listener {
             return;
 
         // they just joined
-        Match match = automoveManager.getPlayerMatch(event.getPlayer().getUniqueId());
+        Match match = registry.getPlayerMatch(event.getPlayer().getUniqueId());
         if (match == null)
             return;
 
-        ServerInfo assignedServer = ProxyServer.getInstance().getServerInfo(match.getServer());
-        if (assignedServer == null)
-            return;
+        registry.onPlayerJoin(event.getPlayer(), match);
+        if (match.getStatus() == MatchStatus.LOADED || match.getStatus() == MatchStatus.STARTED) {
+            ServerInfo assignedServer = ProxyServer.getInstance().getServerInfo(match.getServer());
+            if (assignedServer == null)
+                return;
 
-        event.setTarget(assignedServer);
+            event.setTarget(assignedServer);
+        }
     }
 
 }

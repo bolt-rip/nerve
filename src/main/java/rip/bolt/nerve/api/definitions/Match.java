@@ -72,4 +72,8 @@ public class Match {
         this.status = status;
     }
 
+    public int getQueueSize() {
+        return teams.get(0).getParticipations().size();
+    }
+
 }

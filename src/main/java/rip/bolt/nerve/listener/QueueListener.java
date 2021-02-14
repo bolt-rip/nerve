@@ -10,9 +10,16 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import rip.bolt.nerve.event.RedisMessageEvent;
+import rip.bolt.nerve.managers.MatchRegistry;
 import rip.bolt.nerve.utils.Messages;
 
 public class QueueListener implements Listener {
+
+    private MatchRegistry registry;
+
+    public QueueListener(MatchRegistry registry) {
+        this.registry = registry;
+    }
 
     @EventHandler
     public void onPlayerJoinQueue(RedisMessageEvent event) {
@@ -28,9 +35,14 @@ public class QueueListener implements Listener {
 
         UUID userUUID = UUID.fromString(user.getString("uuid"));
         String userUsername = user.getString("username");
+
         ProxiedPlayer proxiedUser = ProxyServer.getInstance().getPlayer(userUUID);
         if (proxiedUser != null)
             userUsername = proxiedUser.getName();
+
+        boolean inMatch = false;
+        if (!joined)
+            inMatch = registry.getPlayerMatch(userUUID) != null;
 
         JSONArray players = data.getJSONArray("players");
         if (players == null)
@@ -45,12 +57,12 @@ public class QueueListener implements Listener {
                 continue;
 
             ProxiedPlayer target = ProxyServer.getInstance().getPlayer(UUID.fromString(value.toString()));
-            if (target != null)
+            if (target != null && !inMatch)
                 target.sendMessage(Messages.playerJoinLeaveQueue(userUsername, inQueue, queueSize, joined, target.getUniqueId().equals(userUUID)));
         }
 
         if (!joined) {
-            if (proxiedUser != null)
+            if (proxiedUser != null && !inMatch)
                 proxiedUser.sendMessage(Messages.playerJoinLeaveQueue(userUsername, inQueue, queueSize, joined, true));
         }
     }
