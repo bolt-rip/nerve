@@ -50,15 +50,16 @@ public class MatchRegistry {
     }
 
     public Match getMatchFromServerName(String serverName) {
-        if (matches == null)
-            return null;
-
         for (Match match : matches.values()) {
             if (match.getServer().equals(serverName))
                 return match;
         }
 
         return null;
+    }
+
+    public Match getMatchFromId(String id) {
+        return matches.get(id);
     }
 
     public HashMap<String, Match> getLatestMatches() {

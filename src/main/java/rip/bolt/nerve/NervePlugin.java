@@ -55,7 +55,7 @@ public class NervePlugin extends Plugin {
 
         matchRegistry = new MatchRegistry();
         automoveManager = new AutomoveManager();
-        vetoManager = new VetoManager(matchRegistry, apiManager);
+        vetoManager = new VetoManager(apiManager);
 
         matchRegistry.registerListener(automoveManager);
         matchRegistry.registerListener(vetoManager);
@@ -115,6 +115,10 @@ public class NervePlugin extends Plugin {
 
     public RedisManager getRedisManager() {
         return redisManager;
+    }
+
+    public MatchRegistry getMatchRegistry() {
+        return matchRegistry;
     }
 
     public AutomoveManager getAutomoveManager() {

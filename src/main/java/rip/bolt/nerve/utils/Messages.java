@@ -3,10 +3,15 @@ package rip.bolt.nerve.utils;
 import static rip.bolt.nerve.utils.Components.command;
 
 import java.util.List;
+import java.util.UUID;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import rip.bolt.nerve.api.definitions.Match;
+import rip.bolt.nerve.api.definitions.Team;
 
 public class Messages {
 
@@ -48,6 +53,43 @@ public class Messages {
         return new BaseComponent[] { PREFIX, colour(ChatColor.GOLD, "You have vetoed "), colour(ChatColor.YELLOW, map), colour(ChatColor.GOLD, "!") };
     }
 
+    public static BaseComponent[] mapDecided(String map) {
+        return new BaseComponent[] { PREFIX, colour(ChatColor.GOLD, "You will be playing on "), colour(ChatColor.YELLOW, map), colour(ChatColor.GOLD, "!") };
+    }
+
+    public static BaseComponent[] formatMatchHeader(Match match) {
+        return new BaseComponent[] { strikethrough(colour(ChatColor.DARK_GRAY, "     ")), colour(ChatColor.YELLOW, " " + match.getMatchId() + " ("), colour(ChatColor.AQUA, match.getStatus().toString()), colour(ChatColor.YELLOW, ") "), strikethrough(colour(ChatColor.DARK_GRAY, "     ")) };
+    }
+    
+    public static BaseComponent[] formatMatchMap(Match match) {
+        return new BaseComponent[] { colour(ChatColor.YELLOW, "Map: " + match.getMap()) };
+    }
+
+    public static BaseComponent[] formatMatchServer(Match match) {
+        return new BaseComponent[] { colour(ChatColor.YELLOW, "Server: " + match.getServer()) };
+    }
+
+    public static BaseComponent[] formatTeam(Team team) {
+        BaseComponent[] message = new BaseComponent[team.getPlayers().size() * 2];
+        for (int i = 0; i < team.getPlayers().size(); i++) {
+            UUID uuid = team.getPlayers().get(i).getUUID();
+            ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
+            String display = uuid.toString();
+            if (player != null)
+                display = player.getName();
+
+            message[i * 2] = colour(ChatColor.DARK_GRAY, ", ");
+            message[i * 2 + 1] = colour(ChatColor.DARK_AQUA, display);
+        }
+        message[0] = new TextComponent();
+
+        return message;
+    }
+
+    public static BaseComponent[] removeMatch(Match match) {
+        return new BaseComponent[] { colour(ChatColor.YELLOW, "Match " + match.getMatchId() + " has been removed!") };
+    }
+
     public static TextComponent colour(ChatColor colour, String text) {
         return colour(colour, new TextComponent(text));
     }
@@ -60,6 +102,12 @@ public class Messages {
 
     public static <T extends BaseComponent> T bold(T text) {
         text.setBold(true);
+
+        return text;
+    }
+
+    public static <T extends BaseComponent> T strikethrough(T text) {
+        text.setStrikethrough(true);
 
         return text;
     }

@@ -20,7 +20,7 @@ public class Match {
     @JsonProperty(access = Access.WRITE_ONLY)
     private List<Team> teams;
 
-    private String winner;
+    private Team winner;
 
     private MatchStatus status;
 
@@ -56,11 +56,11 @@ public class Match {
         this.teams = teams;
     }
 
-    public String getWinner() {
+    public Team getWinner() {
         return winner;
     }
 
-    public void setWinner(String winner) {
+    public void setWinner(Team winner) {
         this.winner = winner;
     }
 
