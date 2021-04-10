@@ -1,5 +1,6 @@
 package rip.bolt.nerve.api;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,11 +18,11 @@ public class APIManager {
 
     private final APIService apiService;
 
-    public APIManager() {
+    public APIManager(ObjectMapper objectMapper) {
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(chain -> chain.proceed(chain.request().newBuilder().header("Authorization", "Bearer " + AppData.API.getKey()).build()));
 
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(AppData.API.getURL()).addConverterFactory(JacksonConverterFactory.create(new ObjectMapper().registerModule(new DateModule()))).addCallAdapterFactory(new DefaultCallAdapterFactory<>()).client(httpClient.build()).build();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(AppData.API.getURL()).addConverterFactory(JacksonConverterFactory.create(objectMapper)).addCallAdapterFactory(new DefaultCallAdapterFactory<>()).client(httpClient.build()).build();
         apiService = retrofit.create(APIService.class);
     }
 
@@ -30,7 +31,11 @@ public class APIManager {
     }
 
     public BoltResponse veto(Match match, UUID uuid, Veto veto) {
-        return apiService.veto(match.getMatchId(), uuid.toString(), veto);
+        return apiService.veto(match.getId(), uuid.toString(), veto);
+    }
+
+    public List<Match> matches() {
+        return apiService.matches();
     }
 
 }

@@ -1,4 +1,4 @@
-package rip.bolt.nerve.api;
+package rip.bolt.nerve.api.definitions;
 
 public enum MatchStatus {
 

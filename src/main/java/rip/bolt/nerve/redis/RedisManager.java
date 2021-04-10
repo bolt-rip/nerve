@@ -10,6 +10,7 @@ import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import rip.bolt.nerve.NervePlugin;
 import rip.bolt.nerve.config.AppData;
+import rip.bolt.nerve.event.RedisConnectEvent;
 import rip.bolt.nerve.event.RedisMessageEvent;
 
 public class RedisManager {
@@ -60,6 +61,8 @@ public class RedisManager {
             while (!Thread.interrupted() && !pool.isClosed()) {
                 try (Jedis jedis = pool.getResource()) {
                     System.out.println("[Nerve] Connected to Redis!");
+                    ProxyServer.getInstance().getPluginManager().callEvent(new RedisConnectEvent());
+
                     jedis.subscribe(new JedisPubSub() {
 
                         @Override

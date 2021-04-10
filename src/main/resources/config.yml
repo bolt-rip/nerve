@@ -1,5 +1,14 @@
+api:
+  url: http://localhost:3000/api/v1/
+  key: ""
+
 redis:
   enabled: true
   host: localhost
   port: 6379
+  password: ""
   reconnect-sleep: 15
+
+private-server-messages:
+  no-perms-message: "&6Please follow the link to request permissions for a free private server: "
+  no-perms-link: https://localhost:3000/private-server

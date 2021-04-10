@@ -4,9 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-import org.apache.commons.io.FileUtils;
-
 import net.md_5.bungee.api.plugin.Plugin;
+import rip.bolt.nerve.utils.FileUtils;
 
 public class ConfigManager {
 

@@ -44,4 +44,18 @@ public class AppData {
 
     }
 
+    public static class PrivateServers {
+
+        private static ConfigSection section = NervePlugin.getInstance().getAppConfig().getSection("private-server-messages");
+
+        public static String getNoPermsMessage() {
+            return section.getString("no-perms-message");
+        }
+
+        public static String getNoPermsLink() {
+            return section.getString("no-perms-link");
+        }
+
+    }
+
 }

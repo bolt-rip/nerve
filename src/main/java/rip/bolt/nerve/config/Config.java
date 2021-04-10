@@ -16,6 +16,7 @@ public class Config extends ConfigSection {
 
     /**
      * Load a Config file from a stream.
+     * 
      * @param inputStream Stream to load YAML.
      */
     public Config(InputStream inputStream) {
@@ -24,6 +25,7 @@ public class Config extends ConfigSection {
 
     /**
      * Load a Config file from a string.
+     * 
      * @param text String to load YAML.
      */
     public Config(String text) {
@@ -32,6 +34,7 @@ public class Config extends ConfigSection {
 
     /**
      * Saves data to a file.
+     * 
      * @param file The file to write the data to.
      * @throws Exception If an issue occurs with file operations.
      */

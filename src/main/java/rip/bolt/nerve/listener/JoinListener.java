@@ -10,8 +10,8 @@ import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import rip.bolt.nerve.api.MatchStatus;
 import rip.bolt.nerve.api.definitions.Match;
+import rip.bolt.nerve.api.definitions.MatchStatus;
 import rip.bolt.nerve.managers.MatchRegistry;
 
 public class JoinListener implements Listener {

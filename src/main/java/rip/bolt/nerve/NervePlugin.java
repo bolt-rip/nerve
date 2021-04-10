@@ -1,5 +1,6 @@
 package rip.bolt.nerve;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sk89q.bungee.util.BungeeCommandsManager;
 import com.sk89q.bungee.util.CommandExecutor;
 import com.sk89q.bungee.util.CommandRegistration;
@@ -15,6 +16,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Plugin;
 import rip.bolt.nerve.api.APIManager;
+import rip.bolt.nerve.api.DateModule;
 import rip.bolt.nerve.commands.BoltCommands;
 import rip.bolt.nerve.commands.PrivateCommand;
 import rip.bolt.nerve.config.Config;
@@ -25,6 +27,7 @@ import rip.bolt.nerve.listener.QueueListener;
 import rip.bolt.nerve.listener.ServerAddedListener;
 import rip.bolt.nerve.managers.AutomoveManager;
 import rip.bolt.nerve.managers.MatchRegistry;
+import rip.bolt.nerve.managers.TeamInformationManager;
 import rip.bolt.nerve.managers.VetoManager;
 import rip.bolt.nerve.redis.RedisManager;
 
@@ -33,6 +36,7 @@ public class NervePlugin extends Plugin {
     protected BungeeCommandsManager commands;
     protected CommandRegistration cmdRegister;
 
+    protected ObjectMapper objectMapper;
     protected APIManager apiManager;
     protected RedisManager redisManager;
 
@@ -50,20 +54,22 @@ public class NervePlugin extends Plugin {
         appConfig = new ConfigManager(this, "config").get();
         new ConfigManager(this, "template"); // copy template.yml from jar into plugins/Nerve/template.yml
 
-        apiManager = new APIManager();
+        objectMapper = new ObjectMapper().registerModule(new DateModule());
+        apiManager = new APIManager(objectMapper);
         redisManager = new RedisManager();
 
-        matchRegistry = new MatchRegistry();
+        matchRegistry = new MatchRegistry(apiManager);
         automoveManager = new AutomoveManager();
         vetoManager = new VetoManager(apiManager);
 
         matchRegistry.registerListener(automoveManager);
+        matchRegistry.registerListener(new TeamInformationManager());
         matchRegistry.registerListener(vetoManager);
 
         ProxyServer.getInstance().getPluginManager().registerListener(this, new ServerAddedListener());
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new MatchUpdateListener(matchRegistry));
+        ProxyServer.getInstance().getPluginManager().registerListener(this, new MatchUpdateListener(matchRegistry, objectMapper));
         ProxyServer.getInstance().getPluginManager().registerListener(this, new JoinListener(matchRegistry));
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new QueueListener(matchRegistry));
+        ProxyServer.getInstance().getPluginManager().registerListener(this, new QueueListener(matchRegistry, objectMapper));
 
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new PrivateCommand());
         setupCommands();

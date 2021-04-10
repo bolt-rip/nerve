@@ -1,14 +1,17 @@
 package rip.bolt.nerve.listener;
 
+import java.io.IOException;
 import java.util.UUID;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import rip.bolt.nerve.api.definitions.QueueUpdate;
+import rip.bolt.nerve.api.definitions.QueueUpdate.Action;
 import rip.bolt.nerve.event.RedisMessageEvent;
 import rip.bolt.nerve.managers.MatchRegistry;
 import rip.bolt.nerve.utils.Messages;
@@ -16,9 +19,11 @@ import rip.bolt.nerve.utils.Messages;
 public class QueueListener implements Listener {
 
     private MatchRegistry registry;
+    private ObjectMapper objectMapper;
 
-    public QueueListener(MatchRegistry registry) {
+    public QueueListener(MatchRegistry registry, ObjectMapper objectMapper) {
         this.registry = registry;
+        this.objectMapper = objectMapper;
     }
 
     @EventHandler
@@ -26,44 +31,33 @@ public class QueueListener implements Listener {
         if (!event.getChannel().equals("queue"))
             return;
 
-        JSONObject data = new JSONObject(event.getMessage());
-        boolean joined = data.getString("action").equals("JOIN");
+        try {
+            QueueUpdate update = objectMapper.readValue(event.getMessage(), QueueUpdate.class);
+            ProxiedPlayer proxiedUser = ProxyServer.getInstance().getPlayer(update.getUser().getUniqueId());
+            String username = proxiedUser == null ? update.getUser().getUsername() : proxiedUser.getName();
 
-        JSONObject user = data.getJSONObject("user");
-        if (user == null)
-            return;
+            if (update.getAction() == Action.LEAVE) { // when the match starts & players are moved to their teams, this event may be (incorrectly) fired
+                if (registry.getPlayerMatch(update.getUser().getUniqueId()) != null)
+                    return;
+            }
 
-        UUID userUUID = UUID.fromString(user.getString("uuid"));
-        String userUsername = user.getString("username");
+            int inQueue = update.getPlayers().size();
+            int queueSize = update.getLimit();
+            BaseComponent[] playerJoinLeaveQueue = Messages.playerJoinLeaveQueue(username, inQueue, queueSize, update.getAction(), false);
 
-        ProxiedPlayer proxiedUser = ProxyServer.getInstance().getPlayer(userUUID);
-        if (proxiedUser != null)
-            userUsername = proxiedUser.getName();
+            for (UUID uuid : update.getPlayers()) {
+                if (uuid == null || uuid.equals(update.getUser().getUniqueId()))
+                    continue;
 
-        boolean inMatch = false;
-        if (!joined)
-            inMatch = registry.getPlayerMatch(userUUID) != null;
+                ProxiedPlayer target = ProxyServer.getInstance().getPlayer(uuid);
+                if (target != null)
+                    target.sendMessage(playerJoinLeaveQueue);
+            }
 
-        JSONArray players = data.getJSONArray("players");
-        if (players == null)
-            return;
-
-        int inQueue = players.length();
-        int queueSize = data.getInt("limit");
-
-        for (int i = 0; i < inQueue; i++) {
-            Object value = players.get(i);
-            if (value == null || !(value instanceof String))
-                continue;
-
-            ProxiedPlayer target = ProxyServer.getInstance().getPlayer(UUID.fromString(value.toString()));
-            if (target != null && !inMatch)
-                target.sendMessage(Messages.playerJoinLeaveQueue(userUsername, inQueue, queueSize, joined, target.getUniqueId().equals(userUUID)));
-        }
-
-        if (!joined) {
-            if (proxiedUser != null && !inMatch)
-                proxiedUser.sendMessage(Messages.playerJoinLeaveQueue(userUsername, inQueue, queueSize, joined, true));
+            if (proxiedUser != null)
+                proxiedUser.sendMessage(Messages.playerJoinLeaveQueue(username, inQueue, queueSize, update.getAction(), true));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

@@ -4,17 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import rip.bolt.nerve.api.MatchStatus;
 import rip.bolt.nerve.api.definitions.Match;
+import rip.bolt.nerve.api.definitions.MatchStatus;
 import rip.bolt.nerve.event.RedisMessageEvent;
 import rip.bolt.nerve.managers.MatchRegistry;
 
 public class MatchUpdateListener implements Listener {
 
     private MatchRegistry registry;
+    private ObjectMapper objectMapper;
 
-    public MatchUpdateListener(MatchRegistry registry) {
+    public MatchUpdateListener(MatchRegistry registry, ObjectMapper objectMapper) {
         this.registry = registry;
+        this.objectMapper = objectMapper;
     }
 
     @EventHandler
@@ -23,7 +25,7 @@ public class MatchUpdateListener implements Listener {
             return;
 
         try {
-            Match match = new ObjectMapper().readValue(event.getMessage(), Match.class);
+            Match match = objectMapper.readValue(event.getMessage(), Match.class);
             if (match.getStatus() == MatchStatus.ENDED || match.getStatus() == MatchStatus.CANCELLED)
                 registry.removeMatch(match);
             else
@@ -32,4 +34,5 @@ public class MatchUpdateListener implements Listener {
             e.printStackTrace();
         }
     }
+
 }

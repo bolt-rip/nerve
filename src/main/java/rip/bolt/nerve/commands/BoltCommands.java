@@ -1,18 +1,23 @@
 package rip.bolt.nerve.commands;
 
-import com.sk89q.minecraft.util.commands.ChatColor;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.NestedCommand;
 
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import rip.bolt.nerve.NervePlugin;
 import rip.bolt.nerve.api.definitions.Match;
 import rip.bolt.nerve.api.definitions.Team;
+import rip.bolt.nerve.event.RedisConnectEvent;
 import rip.bolt.nerve.managers.MatchRegistry;
 import rip.bolt.nerve.managers.VetoManager;
 import rip.bolt.nerve.utils.Components;
@@ -62,7 +67,7 @@ public class BoltCommands {
             sender.sendMessage(Messages.formatMatchServer(match));
 
             for (Team team : match.getTeams()) {
-                sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GRAY + team.getName() + ":"));
+                sender.sendMessage(Messages.colour(ChatColor.YELLOW, team.getName() + ":"));
                 sender.sendMessage(Messages.formatTeam(team));
             }
         }
@@ -81,6 +86,31 @@ public class BoltCommands {
 
         registry.removeMatch(target);
         sender.sendMessage(Messages.removeMatch(target));
+    }
+
+    @Command(aliases = { "sync" }, desc = "Sync loaded matches with API", max = 0)
+    @CommandPermissions("nerve.staff")
+    public static void sync(final CommandContext cmd, CommandSender sender) throws CommandException {
+        registry.onRedisConnect(new RedisConnectEvent()); // yuck
+        sender.sendMessage(Messages.colour(ChatColor.YELLOW, "Sync queued."));
+    }
+
+    @Command(aliases = { "staff", "os" }, desc = "Lists online staff on ranked servers", max = 0)
+    @CommandPermissions("nerve.staff")
+    public static void staff(final CommandContext cmd, CommandSender sender) throws CommandException {
+        NervePlugin.async(() -> {
+            for (ServerInfo server : ProxyServer.getInstance().getServers().values()) {
+                if (!(server.getName().toLowerCase().startsWith("ranked-") || server.getName().equals("lobby")))
+                    continue;
+
+                List<String> onlineStaff = new ArrayList<String>();
+                for (ProxiedPlayer player : server.getPlayers())
+                    if (player.hasPermission("nerve.staff"))
+                        onlineStaff.add(player.getName());
+
+                sender.sendMessage(Messages.formatStaffOnline(server.getName(), onlineStaff));
+            }
+        });
     }
 
 }

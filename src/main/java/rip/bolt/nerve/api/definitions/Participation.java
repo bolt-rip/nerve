@@ -12,7 +12,7 @@ public class Participation {
     }
 
     public Participation() {
-        
+
     }
 
     public User getUser() {

@@ -16,7 +16,8 @@ public class ConfigSection {
 
     /**
      * Load from a Map of values.
-     * @param map Values to load.
+     * 
+     * @param map  Values to load.
      * @param name The name of the section.
      */
     @SuppressWarnings("rawtypes")
@@ -46,6 +47,7 @@ public class ConfigSection {
 
     /**
      * Load from a Map of values.
+     * 
      * @param map Values to load.
      */
     @SuppressWarnings("rawtypes")
@@ -55,7 +57,8 @@ public class ConfigSection {
 
     /**
      * Modify a value and overwrite any existing value.
-     * @param key The key of the value.
+     * 
+     * @param key   The key of the value.
      * @param value The data to store.
      */
     public void set(String key, Object value) {
@@ -64,6 +67,7 @@ public class ConfigSection {
 
     /**
      * Checks if a value is set.
+     * 
      * @param key The path to the value.
      * @return If the key exists and is set to any value.
      */
@@ -73,6 +77,7 @@ public class ConfigSection {
 
     /**
      * Checks if a value is not set.
+     * 
      * @param key The path to the value.
      * @return If the key is not set.
      */
@@ -82,6 +87,7 @@ public class ConfigSection {
 
     /**
      * Retrieve a list of keys.
+     * 
      * @return Set of all keys under this section.
      */
     public Set<String> getKeys() {
@@ -90,6 +96,7 @@ public class ConfigSection {
 
     /**
      * Retrieve data stored in the config.
+     * 
      * @param key Path to the data.
      * @return Value of the key.
      */
@@ -99,6 +106,7 @@ public class ConfigSection {
 
     /**
      * Retrieve data stored in the config.
+     * 
      * @param key Path to the data.
      * @param def Default to value if null.
      * @return Value of the key.
@@ -110,6 +118,7 @@ public class ConfigSection {
 
     /**
      * Retrieve an integer stored in the config.
+     * 
      * @param key Path to the data.
      * @return Value of the key.
      */
@@ -119,6 +128,7 @@ public class ConfigSection {
 
     /**
      * Retrieve a long stored in the config.
+     * 
      * @param key Path to the data.
      * @return Value of the key.
      */
@@ -128,6 +138,7 @@ public class ConfigSection {
 
     /**
      * Retrieve an integer stored in the config.
+     * 
      * @param key Path to the data.
      * @param def Default to value if null.
      * @return Value of the key.
@@ -139,6 +150,7 @@ public class ConfigSection {
 
     /**
      * Retrieve a string stored in the config.
+     * 
      * @param key Path to the data.
      * @return Value of the key.
      */
@@ -148,6 +160,7 @@ public class ConfigSection {
 
     /**
      * Retrieve a string stored in the config.
+     * 
      * @param key Path to the data.
      * @param def Default to value if null.
      * @return Value of the key.
@@ -159,6 +172,7 @@ public class ConfigSection {
 
     /**
      * Retrieve a boolean stored in the config.
+     * 
      * @param key Path to the data.
      * @return Value of the key.
      */
@@ -168,6 +182,7 @@ public class ConfigSection {
 
     /**
      * Retrieve a boolean stored in the config.
+     * 
      * @param key Path to the data.
      * @param def Default to value if null.
      * @return Value of the key.
@@ -179,6 +194,7 @@ public class ConfigSection {
 
     /**
      * Retrieve a double stored in the config.
+     * 
      * @param key Path to the data.
      * @return Value of the key.
      */
@@ -188,6 +204,7 @@ public class ConfigSection {
 
     /**
      * Retrieve a double stored in the config.
+     * 
      * @param key Path to the data.
      * @param def Default to value if null.
      * @return Value of the key.
@@ -199,6 +216,7 @@ public class ConfigSection {
 
     /**
      * Retrieve a child section of the config.
+     * 
      * @param key Path to the data.
      * @return Value of the key.
      */
@@ -208,6 +226,7 @@ public class ConfigSection {
 
     /**
      * Retrieve an integer list stored in the config.
+     * 
      * @param key Path to the data.
      * @return Value of the key.
      */
@@ -217,6 +236,7 @@ public class ConfigSection {
 
     /**
      * Retrieve a string list stored in the config.
+     * 
      * @param key Path to the data.
      * @return Value of the key.
      */
@@ -226,6 +246,7 @@ public class ConfigSection {
 
     /**
      * Retrieve a ConfigSection list stored in the config.
+     * 
      * @param key Path to the data.
      * @return Value of the key.
      */

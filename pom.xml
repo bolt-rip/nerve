@@ -75,24 +75,22 @@
 			<version>20190722</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.6</version>
-		</dependency>
-		<dependency>
 			<groupId>io.fabric8</groupId>
 			<artifactId>kubernetes-client</artifactId>
 			<version>4.10.2</version>
+			<scope>provided</scope> <!-- Provided by DockerizedCraft -->
 		</dependency>
 		<dependency>
 			<groupId>de.craftmania</groupId>
 			<artifactId>DockerizedCraft</artifactId>
 			<version>0.2.6</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.exceptionflug</groupId>
 			<artifactId>protocolize-world</artifactId>
 			<version>1.6.7-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
@@ -136,9 +134,6 @@
 									<include>*:*</include>
 								</includes>
 								<excludes>
-									<exclude>net.md-5:bungeecord-api</exclude>
-									<exclude>de.craftmania:DockerizedCraft</exclude>
-									<exclude>de.exceptionflug:protocolize-world</exclude>
 								</excludes>
 							</artifactSet>
 						</configuration>

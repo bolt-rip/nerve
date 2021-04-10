@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Team {
 
-    private String name;
+    private String name, mmr;
 
     private List<Participation> participations;
 
@@ -22,6 +22,14 @@ public class Team {
 
     public String getName() {
         return name;
+    }
+
+    public String getMMR() {
+        int idx = mmr.indexOf('.');
+        if (idx >= 0)
+            return mmr.substring(0, idx);
+
+        return mmr;
     }
 
     public List<Participation> getParticipations() {

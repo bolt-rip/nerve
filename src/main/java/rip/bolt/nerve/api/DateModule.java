@@ -22,17 +22,21 @@ public class DateModule extends SimpleModule {
     }
 
     private static class InstantSerializer extends JsonSerializer<Instant> {
+
         @Override
         public void serialize(Instant instant, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
             jsonGenerator.writeString(instant.toString());
         }
+
     }
 
     private static class InstantDeserializer extends JsonDeserializer<Instant> {
+
         @Override
         public Instant deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             return Instant.parse(jsonParser.getValueAsString());
         }
+
     }
 
 }
