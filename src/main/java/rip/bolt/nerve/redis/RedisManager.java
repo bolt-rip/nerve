@@ -2,33 +2,49 @@ package rip.bolt.nerve.redis;
 
 import java.util.Arrays;
 
-import net.md_5.bungee.api.ProxyServer;
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+
+import com.velocitypowered.api.proxy.ProxyServer;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
-import rip.bolt.nerve.NervePlugin;
-import rip.bolt.nerve.config.AppData;
 import rip.bolt.nerve.event.RedisConnectEvent;
 import rip.bolt.nerve.event.RedisMessageEvent;
+import rip.bolt.nerve.utils.Executor;
 
 public class RedisManager {
+
+    private ProxyServer server;
+    private Executor executor;
+
+    private RedisConfig config;
+    private Logger logger;
 
     private JedisPool pool;
 
     private static String[] subscriberChannels = { "queue", "match" };
 
-    public RedisManager() {
-        if (!AppData.Redis.isEnabled())
+    @Inject
+    public RedisManager(ProxyServer server, Executor executor, RedisConfig config, Logger logger) {
+        if (!config.enabled())
             return;
+
+        this.server = server;
+        this.executor = executor;
+        this.config = config;
+        this.logger = logger;
 
         connect();
         startSubscriberThread();
     }
 
     public void sendRedisMessage(String channel, String message) {
-        if (AppData.Redis.isEnabled()) {
+        if (config.enabled()) {
             Jedis jedis = pool.getResource();
             try {
                 jedis.publish(channel, message);
@@ -36,7 +52,7 @@ public class RedisManager {
                 jedis.close();
             }
         } else if (Arrays.asList(subscriberChannels).contains(channel)) { // fire the event since if redis was running, we would receive the event from the subscriber anyway
-            ProxyServer.getInstance().getPluginManager().callEvent(new RedisMessageEvent(channel, message));
+            server.getEventManager().fire(new RedisMessageEvent(channel, message));
         }
     }
 
@@ -45,11 +61,11 @@ public class RedisManager {
             if (pool != null)
                 pool.destroy();
 
-            System.out.println("[Nerve] Connecting to Redis...");
-            JedisPoolConfig config = new JedisPoolConfig();
-            pool = new JedisPool(config, AppData.Redis.getHost(), AppData.Redis.getPort(), 5000, AppData.Redis.getPassword());
+            logger.info("Connecting to Redis...");
+            JedisPoolConfig poolConfig = new JedisPoolConfig();
+            pool = new JedisPool(poolConfig, config.host(), config.port(), 5000, config.password());
         } catch (Throwable e) {
-            System.out.println("[Nerve] Failed to connect to Redis! " + e.toString());
+            logger.warn("Failed to connect to Redis! " + e.toString());
             return false;
         }
 
@@ -57,25 +73,25 @@ public class RedisManager {
     }
 
     public void startSubscriberThread() {
-        NervePlugin.async(() -> {
+        executor.async(() -> {
             while (!Thread.interrupted() && !pool.isClosed()) {
                 try (Jedis jedis = pool.getResource()) {
-                    System.out.println("[Nerve] Connected to Redis!");
-                    ProxyServer.getInstance().getPluginManager().callEvent(new RedisConnectEvent());
+                    logger.info("Connected to Redis!");
+                    server.getEventManager().fire(new RedisConnectEvent());
 
                     jedis.subscribe(new JedisPubSub() {
 
                         @Override
                         public void onMessage(String channel, String message) {
-                            ProxyServer.getInstance().getPluginManager().callEvent(new RedisMessageEvent(channel, message));
+                            server.getEventManager().fire(new RedisMessageEvent(channel, message));
                         }
 
                     }, subscriberChannels);
                 } catch (JedisConnectionException e) {
-                    System.out.println("[Nerve] Redis subscriber failed to connect!");
+                    logger.warn("Redis subscriber failed to connect!");
 
                     try {
-                        Thread.sleep(((long) AppData.Redis.getReconnectSleep()) * 1000);
+                        Thread.sleep(((long) config.reconnect_sleep()) * 1000);
                     } catch (InterruptedException e1) {
                         Thread.currentThread().interrupt();
                     }

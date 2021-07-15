@@ -8,8 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-
-import net.md_5.bungee.api.connection.ProxiedPlayer;
+import com.velocitypowered.api.proxy.Player;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Match {
@@ -107,7 +106,7 @@ public class Match {
         return teams.get(0).getParticipations().size();
     }
 
-    public Team getPlayerTeam(ProxiedPlayer player) {
+    public Team getPlayerTeam(Player player) {
         return getPlayerTeam(player.getUniqueId());
     }
 

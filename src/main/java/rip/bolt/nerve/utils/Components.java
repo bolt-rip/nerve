@@ -1,35 +1,37 @@
 package rip.bolt.nerve.utils;
 
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import static net.kyori.adventure.text.Component.text;
+import static rip.bolt.nerve.utils.Messages.colour;
+
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 
 public class Components {
 
-    public static BaseComponent command(ChatColor colour, String command, String... args) {
+    public static TextComponent command(NamedTextColor colour, String command, String... args) {
         if (!command.startsWith("/"))
             command = "/" + command;
         for (String arg : args)
             command += " " + Components.toArgument(arg);
 
-        TextComponent component = new TextComponent(command);
+        TextComponent component = text(command);
         return command(colour, component, command);
     }
 
-    @SuppressWarnings("deprecation")
-    public static BaseComponent command(ChatColor colour, TextComponent displayed, String command, String... args) {
+    public static TextComponent command(NamedTextColor colour, TextComponent displayed, String command, String... args) {
         if (!command.startsWith("/"))
             command = "/" + command;
         for (String arg : args)
             command += " " + Components.toArgument(arg);
 
-        displayed.setColor(colour);
-        displayed.setUnderlined(true);
-        displayed.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+        displayed.color(colour);
+        displayed.decoration(TextDecoration.UNDERLINED, true);
+        displayed.clickEvent(ClickEvent.runCommand(command));
 
-        displayed.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[] { Messages.colour(ChatColor.GREEN, "Click to run "), Messages.colour(colour, command) }));
+        displayed.hoverEvent(HoverEvent.showText(text().append(colour(NamedTextColor.GREEN, "Click to run ")).append(colour(colour, command)).build()));
 
         return displayed;
     }

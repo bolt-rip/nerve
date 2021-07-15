@@ -1,40 +1,46 @@
 package rip.bolt.nerve.listener;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.inject.Inject;
 
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.event.EventHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ProxyServer;
+
+import net.kyori.adventure.text.TextComponent;
 import rip.bolt.nerve.api.definitions.QueueUpdate;
 import rip.bolt.nerve.api.definitions.QueueUpdate.Action;
 import rip.bolt.nerve.event.RedisMessageEvent;
-import rip.bolt.nerve.managers.MatchRegistry;
+import rip.bolt.nerve.inject.listener.Listener;
+import rip.bolt.nerve.match.MatchRegistry;
 import rip.bolt.nerve.utils.Messages;
 
 public class QueueListener implements Listener {
 
+    private ProxyServer server;
     private MatchRegistry registry;
     private ObjectMapper objectMapper;
 
-    public QueueListener(MatchRegistry registry, ObjectMapper objectMapper) {
+    @Inject
+    public QueueListener(ProxyServer server, MatchRegistry registry, ObjectMapper objectMapper) {
+        this.server = server;
         this.registry = registry;
         this.objectMapper = objectMapper;
     }
 
-    @EventHandler
+    @Subscribe
     public void onPlayerJoinQueue(RedisMessageEvent event) {
         if (!event.getChannel().equals("queue"))
             return;
 
         try {
             QueueUpdate update = objectMapper.readValue(event.getMessage(), QueueUpdate.class);
-            ProxiedPlayer proxiedUser = ProxyServer.getInstance().getPlayer(update.getUser().getUniqueId());
-            String username = proxiedUser == null ? update.getUser().getUsername() : proxiedUser.getName();
+            Optional<Player> proxiedUser = server.getPlayer(update.getUser().getUniqueId());
+            String username = !proxiedUser.isPresent() ? update.getUser().getUsername() : proxiedUser.get().getUsername();
 
             if (update.getAction() == Action.LEAVE) { // when the match starts & players are moved to their teams, this event may be (incorrectly) fired
                 if (registry.getPlayerMatch(update.getUser().getUniqueId()) != null)
@@ -43,19 +49,19 @@ public class QueueListener implements Listener {
 
             int inQueue = update.getPlayers().size();
             int queueSize = update.getLimit();
-            BaseComponent[] playerJoinLeaveQueue = Messages.playerJoinLeaveQueue(username, inQueue, queueSize, update.getAction(), false);
+            TextComponent playerJoinLeaveQueue = Messages.playerJoinLeaveQueue(username, inQueue, queueSize, update.getAction(), false);
 
             for (UUID uuid : update.getPlayers()) {
                 if (uuid == null || uuid.equals(update.getUser().getUniqueId()))
                     continue;
 
-                ProxiedPlayer target = ProxyServer.getInstance().getPlayer(uuid);
-                if (target != null)
-                    target.sendMessage(playerJoinLeaveQueue);
+                Optional<Player> target = server.getPlayer(uuid);
+                if (target.isPresent())
+                    target.get().sendMessage(playerJoinLeaveQueue);
             }
 
-            if (proxiedUser != null)
-                proxiedUser.sendMessage(Messages.playerJoinLeaveQueue(username, inQueue, queueSize, update.getAction(), true));
+            if (proxiedUser.isPresent())
+                proxiedUser.get().sendMessage(Messages.playerJoinLeaveQueue(username, inQueue, queueSize, update.getAction(), true));
         } catch (IOException e) {
             e.printStackTrace();
         }

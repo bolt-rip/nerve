@@ -1,159 +1,173 @@
 package rip.bolt.nerve.utils;
 
+import static net.kyori.adventure.text.Component.empty;
+import static net.kyori.adventure.text.Component.text;
 import static rip.bolt.nerve.utils.Components.command;
 
 import java.util.List;
 
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import javax.inject.Inject;
+
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import rip.bolt.nerve.api.definitions.Match;
 import rip.bolt.nerve.api.definitions.QueueUpdate.Action;
 import rip.bolt.nerve.api.definitions.Team;
-import rip.bolt.nerve.config.AppData;
+import rip.bolt.nerve.privateserver.PrivateServerConfig;
 
 public class Messages {
 
-    public static final TextComponent PREFIX = new TextComponent(colour(ChatColor.DARK_GRAY, "["), bold(colour(ChatColor.YELLOW, "\u26A1")), colour(ChatColor.DARK_GRAY, "]"), colour(ChatColor.RESET, " "));
-    public static final TextComponent DASH = colour(ChatColor.DARK_GRAY, " - ");
+    public static final TextComponent PREFIX = text().append(colour(NamedTextColor.DARK_GRAY, "[")).append(bold(colour(NamedTextColor.YELLOW, "\u26A1")), colour(NamedTextColor.DARK_GRAY, "]")).append(colour(NamedTextColor.WHITE, " ")).build();
+    public static final TextComponent DASH = colour(NamedTextColor.DARK_GRAY, " - ");
 
-    public static BaseComponent[] privateServerStarted(String server) {
-        return new BaseComponent[] { PREFIX, colour(ChatColor.GREEN, "Your private server has started up! Run "), command(ChatColor.YELLOW, "server", server), colour(ChatColor.GREEN, " to connect.") };
+    @Inject private static PrivateServerConfig privateServerConfig;
+
+    public static TextComponent privateServerStarted(String server) {
+        return text().append(PREFIX).append(colour(NamedTextColor.GREEN, "Your private server has started up! Run ")).append(command(NamedTextColor.YELLOW, "server", server)).append(colour(NamedTextColor.GREEN, " to connect.")).build();
     }
 
-    public static BaseComponent[] rankedMatchReady(String server, String map) {
-        return new BaseComponent[] { PREFIX, colour(ChatColor.GREEN, "Your ranked match on "), colour(ChatColor.YELLOW, map), colour(ChatColor.GREEN, " is starting soon! Run "), command(ChatColor.YELLOW, "server", server), colour(ChatColor.GREEN, " to connect.") };
+    public static TextComponent rankedMatchReady(String server, String map) {
+        return text().append(PREFIX).append(colour(NamedTextColor.GREEN, "Your ranked match on ")).append(colour(NamedTextColor.YELLOW, map)).append(colour(NamedTextColor.GREEN, " is starting soon! Run ")).append(command(NamedTextColor.YELLOW, "server", server)).append(colour(NamedTextColor.GREEN, " to connect.")).build();
     }
 
-    public static BaseComponent[] playerJoinLeaveQueue(String player, int inQueue, int queueSize, Action action, boolean targetIsReceiving) {
-        return new BaseComponent[] { PREFIX, colour(targetIsReceiving ? ChatColor.GREEN : ChatColor.YELLOW, targetIsReceiving ? "You" : player), colour(ChatColor.GREEN, (action == Action.JOIN ? " joined" : " left") + " the queue"), colour(ChatColor.DARK_GRAY, " | "), colour(ChatColor.WHITE, String.valueOf(inQueue)), colour(ChatColor.DARK_GRAY, "/"), colour(ChatColor.GRAY, String.valueOf(queueSize)) };
+    public static TextComponent playerJoinLeaveQueue(String player, int inQueue, int queueSize, Action action, boolean targetIsReceiving) {
+        return text().append(PREFIX).append(colour(targetIsReceiving ? NamedTextColor.GREEN : NamedTextColor.YELLOW, targetIsReceiving ? "You" : player)).append(colour(NamedTextColor.GREEN, (action == Action.JOIN ? " joined" : " left") + " the queue")).append(colour(NamedTextColor.DARK_GRAY, " | ")).append(colour(NamedTextColor.WHITE, String.valueOf(inQueue))).append(colour(NamedTextColor.DARK_GRAY, "/")).append(colour(NamedTextColor.GRAY, String.valueOf(queueSize))).build();
     }
 
-    public static BaseComponent[] vetoMessage() {
-        return new BaseComponent[] { PREFIX, colour(ChatColor.GOLD, "Your match is starting. Pick the map you want to "), bold(colour(ChatColor.RED, "veto")), colour(ChatColor.GOLD, ":") };
+    public static TextComponent vetoMessage() {
+        return text().append(PREFIX).append(colour(NamedTextColor.GOLD, "Your match is starting. Pick the map you want to ")).append(bold(colour(NamedTextColor.RED, "veto"))).append(colour(NamedTextColor.GOLD, ":")).build();
     }
 
-    public static BaseComponent[] vetoOptions(List<String> maps) {
-        BaseComponent[] message = new BaseComponent[maps.size() * 2];
+    public static TextComponent vetoOptions(List<String> maps) {
+        TextComponent[] message = new TextComponent[maps.size() * 2];
         for (int i = 0; i < maps.size(); i++) {
             message[i * 2] = DASH;
             message[i * 2 + 1] = formatMapName(maps.get(i));
         }
 
         message[0] = PREFIX;
-        return message;
+        TextComponent.Builder builder = text();
+        for (TextComponent component : message)
+            builder = builder.append(component);
+        return builder.build();
     }
 
-    public static BaseComponent formatMapName(String map) {
-        return command(ChatColor.YELLOW, new TextComponent(map), "bolt", "veto", map);
+    public static TextComponent formatMapName(String map) {
+        return command(NamedTextColor.YELLOW, text(map), "bolt", "veto", map);
     }
 
-    public static BaseComponent[] mapNotFound(String map) {
-        return new BaseComponent[] { colour(ChatColor.RED, "Map "), colour(ChatColor.RED, map), colour(ChatColor.RED, " not found.") };
+    public static TextComponent mapNotFound(String map) {
+        return text().append(colour(NamedTextColor.RED, "Map ")).append(colour(NamedTextColor.RED, map)).append(colour(NamedTextColor.RED, " not found.")).build();
     }
 
-    public static BaseComponent[] vetoed(String map, boolean vetoedBefore) {
-        return new BaseComponent[] { PREFIX, colour(ChatColor.GOLD, vetoedBefore ? "You have changed your veto to " : "You have vetoed "), colour(ChatColor.YELLOW, map), colour(ChatColor.GOLD, "!") };
+    public static TextComponent vetoed(String map, boolean vetoedBefore) {
+        return text().append(PREFIX).append(colour(NamedTextColor.GOLD, vetoedBefore ? "You have changed your veto to " : "You have vetoed ")).append(colour(NamedTextColor.YELLOW, map)).append(colour(NamedTextColor.GOLD, "!")).build();
     }
 
-    public static BaseComponent[] mapDecided(String map) {
-        return new BaseComponent[] { PREFIX, colour(ChatColor.GOLD, "You will be playing on "), colour(ChatColor.YELLOW, map), colour(ChatColor.GOLD, "!") };
+    public static TextComponent mapDecided(String map) {
+        return text().append(PREFIX).append(colour(NamedTextColor.GOLD, "You will be playing on ")).append(colour(NamedTextColor.YELLOW, map)).append(colour(NamedTextColor.GOLD, "!")).build();
     }
 
-    public static BaseComponent[] formatMatchHeader(Match match) {
-        return new BaseComponent[] { strikethrough(colour(ChatColor.DARK_GRAY, "     ")), colour(ChatColor.YELLOW, " " + match.getId() + " ("), colour(ChatColor.AQUA, match.getStatus().toString()), colour(ChatColor.YELLOW, ") "), strikethrough(colour(ChatColor.DARK_GRAY, "     ")) };
+    public static TextComponent formatMatchHeader(Match match) {
+        return text().append(strikethrough(colour(NamedTextColor.DARK_GRAY, "     "))).append(colour(NamedTextColor.YELLOW, " " + match.getId() + " (")).append(colour(NamedTextColor.AQUA, match.getStatus().toString())).append(colour(NamedTextColor.YELLOW, ") ")).append(strikethrough(colour(NamedTextColor.DARK_GRAY, "     "))).build();
     }
 
-    public static BaseComponent[] formatMatchMap(Match match) {
-        return new BaseComponent[] { colour(ChatColor.YELLOW, "Map: " + match.getMap()) };
+    public static TextComponent formatMatchMap(Match match) {
+        return colour(NamedTextColor.YELLOW, "Map: " + match.getMap());
     }
 
-    public static BaseComponent[] formatMatchServer(Match match) {
-        return new BaseComponent[] { colour(ChatColor.YELLOW, "Server: " + match.getServer()) };
+    public static TextComponent formatMatchServer(Match match) {
+        return colour(NamedTextColor.YELLOW, "Server: " + match.getServer());
     }
 
-    public static BaseComponent[] formatTeam(Team team) {
-        BaseComponent[] message = new BaseComponent[team.getPlayers().size() * 2];
+    public static TextComponent formatTeam(Team team) {
+        TextComponent[] message = new TextComponent[team.getPlayers().size() * 2];
         for (int i = 0; i < team.getPlayers().size(); i++) {
-            message[i * 2] = colour(ChatColor.WHITE, ", ");
-            message[i * 2 + 1] = colour(ChatColor.AQUA, team.getPlayers().get(i).getUsername());
+            message[i * 2] = colour(NamedTextColor.WHITE, ", ");
+            message[i * 2 + 1] = colour(NamedTextColor.AQUA, team.getPlayers().get(i).getUsername());
         }
-        message[0] = new TextComponent();
-
-        return message;
+        message[0] = empty();
+        TextComponent.Builder builder = text();
+        for (TextComponent component : message)
+            builder = builder.append(component);
+        return builder.build();
     }
 
-    public static BaseComponent[] removeMatch(Match match) {
-        return new BaseComponent[] { colour(ChatColor.YELLOW, "Match " + match.getId() + " has been removed!") };
+    public static TextComponent removeMatch(Match match) {
+        return colour(NamedTextColor.YELLOW, "Match " + match.getId() + " has been removed!");
     }
 
-    public static BaseComponent[] formatStaffOnline(String server, List<String> staff) {
-        BaseComponent[] message = new BaseComponent[Math.max(staff.size(), 1) * 2];
+    public static TextComponent formatStaffOnline(String server, List<String> staff) {
+        TextComponent[] message = new TextComponent[Math.max(staff.size(), 1) * 2];
 
         for (int i = 0; i < staff.size(); i++) {
-            message[i * 2] = colour(ChatColor.WHITE, ", ");
-            message[i * 2 + 1] = colour(ChatColor.AQUA, staff.get(i));
+            message[i * 2] = colour(NamedTextColor.WHITE, ", ");
+            message[i * 2 + 1] = colour(NamedTextColor.AQUA, staff.get(i));
         }
         message[0] = formatServerName(server);
         if (staff.size() == 0)
-            message[1] = colour(ChatColor.RED, "No staff online.");
+            message[1] = colour(NamedTextColor.RED, "No staff online.");
 
-        return message;
+        TextComponent.Builder builder = text();
+        for (TextComponent component : message)
+            builder = builder.append(component);
+        return builder.build();
     }
 
     public static TextComponent formatServerName(String server) {
-        return new TextComponent(new BaseComponent[] { colour(ChatColor.WHITE, "["), colour(ChatColor.GOLD, server), colour(ChatColor.WHITE, "] ") });
+        return text().append(colour(NamedTextColor.WHITE, "[")).append(colour(NamedTextColor.GOLD, server)).append(colour(NamedTextColor.WHITE, "] ")).build();
     }
 
-    public static BaseComponent[] noPermsPrivateServer() {
-        return new BaseComponent[] { new TextComponent(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', AppData.PrivateServers.getNoPermsMessage()))), link(AppData.PrivateServers.getNoPermsLink()) };
+    public static TextComponent noPermsPrivateServer() {
+        return text().append(LegacyComponentSerializer.legacyAmpersand().deserialize(privateServerConfig.no_perms_message())).append(link(privateServerConfig.no_perms_link())).build();
     }
 
-    public static TextComponent colour(ChatColor colour, String text) {
-        return colour(colour, new TextComponent(text));
+    public static TextComponent colour(NamedTextColor colour, String text) {
+        return colour(colour, text(text));
     }
 
-    public static TextComponent colour(ChatColor colour, TextComponent text) {
-        text.setColor(colour);
+    public static TextComponent colour(NamedTextColor colour, TextComponent text) {
+        return text.color(colour);
+    }
+
+    public static <T extends Component> T bold(T text) {
+        text.decoration(TextDecoration.BOLD, true);
 
         return text;
     }
 
-    public static <T extends BaseComponent> T bold(T text) {
-        text.setBold(true);
+    public static <T extends Component> T strikethrough(T text) {
+        text.decoration(TextDecoration.STRIKETHROUGH, true);
 
         return text;
     }
 
-    public static <T extends BaseComponent> T strikethrough(T text) {
-        text.setStrikethrough(true);
-
-        return text;
-    }
-
-    public static <T extends BaseComponent> T italic(T text) {
-        text.setItalic(true);
+    public static <T extends Component> T italic(T text) {
+        text.decoration(TextDecoration.ITALIC, true);
 
         return text;
     }
 
     public static TextComponent link(String url) {
-        TextComponent link = new TextComponent(url);
-        link.setColor(ChatColor.BLUE);
-        link.setUnderlined(true);
-        link.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+        TextComponent link = Component.text(url);
+        link.color(NamedTextColor.BLUE);
+        link.decoration(TextDecoration.UNDERLINED, true);
+        link.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, url));
 
         return link;
     }
 
-    public static BaseComponent[] indent(int amount, TextComponent... components) {
-        BaseComponent[] message = new BaseComponent[components.length + 1];
+    public static Component[] indent(int amount, TextComponent... components) {
+        Component[] message = new Component[components.length + 1];
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < amount; i++)
             builder.append(" ");
         System.arraycopy(components, 0, message, 1, components.length);
-        message[0] = new TextComponent(builder.toString());
+        message[0] = Component.text(builder.toString());
 
         return message;
     }
