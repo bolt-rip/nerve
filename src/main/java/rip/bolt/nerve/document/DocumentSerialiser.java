@@ -46,13 +46,16 @@ public class DocumentSerialiser implements JsonSerializer<Document>, JsonDeseria
             JsonElement value = object.get(field.getName());
 
             if (value == null || value.isJsonNull()) {
-                if (!field.isNullable() || !method.isDefault())
-                    throw new IllegalArgumentException("Missing value for " + field.getName());
+                if (!field.isNullable() && !method.isDefault())
+                    throw new IllegalArgumentException("Missing value for " + field.getName() + " in " + type.getName());
 
                 continue;
             }
 
-            data.put(field.getName(), context.deserialize(value, method.getReturnType()));
+            Object deserialised = context.deserialize(value, method.getReturnType());
+            if (deserialised == null)
+                throw new IllegalArgumentException("Failed to deserialise " + field.getName() + " of type " + method.getReturnType() + " in " + type.getName() + " (value " + value + ")");
+            data.put(field.getName(), deserialised);
         }
 
         return (Document) DocumentGenerator.generate(type, info, data);

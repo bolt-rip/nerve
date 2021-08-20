@@ -19,13 +19,21 @@ public class DocumentInformation {
     private DocumentInformation(Class<?> clazz) {
         this.fields = new ArrayList<DocumentField>();
         Class<?> iface = ClassUtils.findYoungestInterface(Document.class, clazz);
-        Objects.requireNonNull(iface, "Could not find interface extending or class implementing Message for " + clazz.getName());
+        Objects.requireNonNull(iface, "Could not find interface extending or class implementing Document for " + clazz.getName());
 
         for (Method method : iface.getMethods()) {
             if (method.isSynthetic() || Modifier.isStatic(method.getModifiers())) // we only want data
                 continue;
 
-            fields.add(new DocumentField(method));
+            String fieldName = DocumentField.getFieldName(method);
+            DocumentField field = find(fieldName);
+            if (field == null)
+                fields.add(field = new DocumentField(fieldName));
+
+            if (method.getParameterCount() == 0)
+                field.setGetter(method);
+            else if (method.getParameterCount() == 1)
+                field.setSetter(method);
         }
     }
 
@@ -34,10 +42,12 @@ public class DocumentInformation {
     }
 
     private static final LoadingCache<Class<?>, DocumentInformation> data = CacheBuilder.newBuilder().build(new CacheLoader<Class<?>, DocumentInformation>() {
+
         @Override
         public DocumentInformation load(Class<?> key) throws Exception {
             return new DocumentInformation(key);
         }
+
     });
 
     public static DocumentInformation of(Class<?> clazz) {

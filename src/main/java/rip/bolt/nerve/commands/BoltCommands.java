@@ -27,7 +27,6 @@ import rip.bolt.nerve.match.listeners.VetoManager;
 import rip.bolt.nerve.utils.Components;
 import rip.bolt.nerve.utils.Executor;
 import rip.bolt.nerve.utils.Messages;
-import rip.bolt.nerve.utils.Sounds;
 
 public class BoltCommands implements Commands {
 
@@ -113,12 +112,6 @@ public class BoltCommands implements Commands {
     public void sync(final CommandContext cmd, CommandSource sender) throws CommandException {
         events.fire(new RedisConnectEvent()); // yuck
         sender.sendMessage(Component.text("Sync queued.").color(NamedTextColor.YELLOW));
-    }
-    
-    @Command(aliases = { "ding" }, desc = "Sync loaded matches with API", max = 0)
-    @CommandPermissions("nerve.staff")
-    public void ding(final CommandContext cmd, CommandSource sender) throws CommandException {
-        Sounds.playDing(((Player) sender));
     }
 
     @Command(aliases = { "staff", "os" }, desc = "Lists online staff on ranked servers", max = 0)

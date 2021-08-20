@@ -26,15 +26,17 @@ public class ServerAddedListener {
     private ProxyServer server;
     private Logger logger;
     private Servers servers;
+    private Sounds sounds;
 
     private Field serverInfoField;
     private Field serverField;
 
     @Inject
-    public ServerAddedListener(ProxyServer server, Logger logger, Servers servers) {
+    public ServerAddedListener(ProxyServer server, Logger logger, Servers servers, Sounds sounds) {
         this.server = server;
         this.logger = logger;
         this.servers = servers;
+        this.sounds = sounds;
 
         inject();
     }
@@ -131,7 +133,7 @@ public class ServerAddedListener {
                 if (!currentServer.isPresent() || servers.isLobby(currentServer.get().getServerInfo().getName())) {
                     requester.get().createConnectionRequest(registeredServer).fireAndForget();
                 } else {
-                    Sounds.playDing(requester.get());
+                    sounds.playDing(requester.get());
                     requester.get().sendMessage(Messages.privateServerStarted(registeredServer.getServerInfo().getName()));
                 }
             }

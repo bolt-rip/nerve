@@ -1,5 +1,7 @@
 package rip.bolt.nerve.inject.config;
 
+import java.util.Objects;
+
 import javax.inject.Inject;
 import javax.inject.Provider;
 
@@ -22,7 +24,7 @@ public class ConfigBinder {
     public <T extends Document> void register(Class<T> clazz) {
         binder.bind(clazz).toProvider(new ConfigProvider<T>(clazz)).in(Singleton.class);
     }
- 
+
     private static class ConfigProvider<T extends Document> implements Provider<T> {
 
         private Gson gson;
@@ -42,7 +44,7 @@ public class ConfigBinder {
         @Override
         public T get() {
             String sectionName = clazz.getAnnotation(Section.class).value();
-            ConfigSection section = config.getSection(sectionName);
+            ConfigSection section = Objects.requireNonNull(config.getSection(sectionName), "section " + sectionName + " missing from config!");
 
             return gson.fromJson(gson.toJsonTree(section.getData()), clazz);
         }

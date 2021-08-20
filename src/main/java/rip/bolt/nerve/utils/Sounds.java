@@ -8,9 +8,9 @@ import rip.bolt.nerve.protocol.PacketHandlerTracker;
 
 public class Sounds {
 
-    @Inject private static PacketHandlerTracker tracker;
+    @Inject private PacketHandlerTracker tracker;
 
-    public static void playDing(Player player) {
+    public void playDing(Player player) {
         tracker.get(player).playDing(1, 1.2f);
     }
 

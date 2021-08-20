@@ -86,7 +86,6 @@ public class NervePlugin extends AbstractModule {
         install(new PrivateServerModule());
 
         FacetBinder facetBinder = new FacetBinder(binder());
-        facetBinder.register(BoltCommands.class);
         facetBinder.register(BoltCommands.BoltParentCommand.class);
         facetBinder.register(QueueListener.class);
         facetBinder.register(AutomoveManager.class);
@@ -94,7 +93,7 @@ public class NervePlugin extends AbstractModule {
         facetBinder.register(VetoManager.class);
 
         binder().requestStaticInjection(Messages.class);
-        binder().requestStaticInjection(Sounds.class);
+        bind(Sounds.class).in(Singleton.class);
 
         bind(FacetContext.class).in(Singleton.class);
     }

@@ -22,11 +22,13 @@ public class AutomoveManager implements MatchStatusListener {
 
     private ProxyServer server;
     private Servers servers;
+    private Sounds sounds;
 
     @Inject
-    public AutomoveManager(ProxyServer server, Servers servers) {
+    public AutomoveManager(ProxyServer server, Servers servers, Sounds sounds) {
         this.server = server;
         this.servers = servers;
+        this.sounds = sounds;
     }
 
     @Override
@@ -57,7 +59,7 @@ public class AutomoveManager implements MatchStatusListener {
         if (servers.isLobby(server.get().getServerInfo().getName())) {
             player.createConnectionRequest(assignedServer).fireAndForget();
         } else {
-            Sounds.playDing(player);
+            sounds.playDing(player);
             player.sendMessage(Messages.rankedMatchReady(assignedServer.getServerInfo().getName(), match.getMap()));
         }
     }

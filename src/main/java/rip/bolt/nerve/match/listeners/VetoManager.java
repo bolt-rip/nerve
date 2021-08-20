@@ -34,9 +34,11 @@ public class VetoManager implements MatchStatusListener {
 
     private Executor executor;
     private ProxyServer server;
-    private NervePlugin plugin;
 
+    private NervePlugin plugin;
     private APIManager api;
+
+    private Sounds sounds;
 
     private Map<String, PoolInformation> pools;
     private Set<UUID> vetoed;
@@ -44,12 +46,14 @@ public class VetoManager implements MatchStatusListener {
     private static final TextComponent vetoMessage = Messages.vetoMessage();
 
     @Inject
-    public VetoManager(Executor executor, ProxyServer server, NervePlugin plugin, APIManager api) {
+    public VetoManager(Executor executor, ProxyServer server, NervePlugin plugin, APIManager api, Sounds sounds) {
         this.executor = executor;
         this.server = server;
-        this.plugin = plugin;
 
+        this.plugin = plugin;
         this.api = api;
+
+        this.sounds = sounds;
 
         this.pools = new HashMap<String, PoolInformation>();
         this.vetoed = new HashSet<UUID>();
@@ -119,7 +123,7 @@ public class VetoManager implements MatchStatusListener {
 
         player.sendMessage(vetoMessage);
         player.sendMessage(vetoOptions);
-        Sounds.playDing(player);
+        sounds.playDing(player);
     }
 
     public void vetoMap(Player player, Match match, String query) {
