@@ -27,11 +27,11 @@ public class Components {
         for (String arg : args)
             command += " " + Components.toArgument(arg);
 
-        displayed.color(colour);
-        displayed.decoration(TextDecoration.UNDERLINED, true);
-        displayed.clickEvent(ClickEvent.runCommand(command));
+        displayed = displayed.color(colour);
+        displayed = displayed.decoration(TextDecoration.UNDERLINED, true);
+        displayed = displayed.clickEvent(ClickEvent.runCommand(command));
 
-        displayed.hoverEvent(HoverEvent.showText(text().append(colour(NamedTextColor.GREEN, "Click to run ")).append(colour(colour, command)).build()));
+        displayed = displayed.hoverEvent(HoverEvent.showText(text().append(colour(NamedTextColor.GREEN, "Click to run ")).append(colour(colour, command)).build()));
 
         return displayed;
     }

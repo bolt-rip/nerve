@@ -11,7 +11,6 @@ import com.google.inject.Guice;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.Stage;
-import com.google.inject.internal.Messages;
 import com.google.inject.name.Named;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.EventManager;
@@ -39,6 +38,7 @@ import rip.bolt.nerve.match.listeners.VetoManager;
 import rip.bolt.nerve.privateserver.PrivateServerModule;
 import rip.bolt.nerve.protocol.ProtocolModule;
 import rip.bolt.nerve.redis.RedisModule;
+import rip.bolt.nerve.utils.Messages;
 import rip.bolt.nerve.utils.Sounds;
 
 @Plugin(id = "nerve", name = "Nerve", version = "2.0.0-SNAPSHOT", authors = { "dentmaged" }, dependencies = @Dependency(id = "snap", optional = true))

@@ -154,9 +154,9 @@ public class Messages {
 
     public static TextComponent link(String url) {
         TextComponent link = Component.text(url);
-        link.color(NamedTextColor.BLUE);
-        link.decoration(TextDecoration.UNDERLINED, true);
-        link.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, url));
+        link = link.color(NamedTextColor.BLUE);
+        link = link.decoration(TextDecoration.UNDERLINED, true);
+        link = link.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, url));
 
         return link;
     }
