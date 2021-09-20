@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.eventbus.Subscribe;
+import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.proxy.connection.MinecraftSessionHandler;
@@ -54,6 +55,12 @@ public class PacketHandlerTracker implements Listener {
 
     @Subscribe
     public void onPlayerSwitchServer(ServerPreConnectEvent event) { // fired before a connection is established with the new server
+        PlayerPacketHandler handler = playerMap.remove(event.getPlayer());
+        sessionHandlerMap.values().remove(handler);
+    }
+
+    @Subscribe
+    public void onDisconnect(DisconnectEvent event) {
         PlayerPacketHandler handler = playerMap.remove(event.getPlayer());
         sessionHandlerMap.values().remove(handler);
     }
