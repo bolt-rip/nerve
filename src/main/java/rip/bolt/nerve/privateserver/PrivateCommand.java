@@ -85,7 +85,7 @@ public class PrivateCommand implements Commands {
                 Player target = optionalTarget.get();
 
                 Optional<RegisteredServer> conflictingServer = server.getServer(target.getUsername());
-                if (conflictingServer != null) {
+                if (conflictingServer.isPresent()) {
                     sender.sendMessage(Messages.colour(NamedTextColor.RED, target.getUsername() + "'s private server is already running!"));
                     return;
                 }
