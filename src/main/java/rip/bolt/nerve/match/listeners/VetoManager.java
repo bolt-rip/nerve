@@ -128,7 +128,13 @@ public class VetoManager implements MatchStatusListener {
 
     public void vetoMap(Player player, Match match, String query) {
         String found = null;
-        for (String map : pools.get(match.getId()).getMaps()) {
+        PoolInformation info = pools.get(match.getId());
+        if (info == null) {
+            player.sendMessage(Component.text("Please wait a few seconds before running this command again.").color(NamedTextColor.RED));
+            return;
+        }
+
+        for (String map : info.getMaps()) {
             if (map.toLowerCase().startsWith(query.toLowerCase())) {
                 found = map;
                 break;
