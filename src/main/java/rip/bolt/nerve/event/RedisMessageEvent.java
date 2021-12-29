@@ -1,8 +1,6 @@
 package rip.bolt.nerve.event;
 
-import net.md_5.bungee.api.plugin.Event;
-
-public class RedisMessageEvent extends Event {
+public class RedisMessageEvent {
 
     private String channel, message;
 

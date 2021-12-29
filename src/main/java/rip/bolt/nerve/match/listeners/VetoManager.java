@@ -1,18 +1,21 @@
-package rip.bolt.nerve.managers;
+package rip.bolt.nerve.match.listeners;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import com.sk89q.minecraft.util.commands.ChatColor;
+import javax.inject.Inject;
 
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
+import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ProxyServer;
+
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import rip.bolt.nerve.NervePlugin;
 import rip.bolt.nerve.api.APIManager;
 import rip.bolt.nerve.api.definitions.BoltResponse;
@@ -22,25 +25,42 @@ import rip.bolt.nerve.api.definitions.PoolInformation;
 import rip.bolt.nerve.api.definitions.Team;
 import rip.bolt.nerve.api.definitions.User;
 import rip.bolt.nerve.api.definitions.Veto;
+import rip.bolt.nerve.match.MatchStatusListener;
+import rip.bolt.nerve.utils.Executor;
 import rip.bolt.nerve.utils.Messages;
 import rip.bolt.nerve.utils.Sounds;
 
 public class VetoManager implements MatchStatusListener {
 
+    private Executor executor;
+    private ProxyServer server;
+
+    private NervePlugin plugin;
     private APIManager api;
+
+    private Sounds sounds;
+
     private Map<String, PoolInformation> pools;
     private Set<UUID> vetoed;
 
-    private static final BaseComponent[] vetoMessage = Messages.vetoMessage();
+    private static final TextComponent vetoMessage = Messages.vetoMessage();
 
-    public VetoManager(APIManager api) {
+    @Inject
+    public VetoManager(Executor executor, ProxyServer server, NervePlugin plugin, APIManager api, Sounds sounds) {
+        this.executor = executor;
+        this.server = server;
+
+        this.plugin = plugin;
         this.api = api;
+
+        this.sounds = sounds;
+
         this.pools = new HashMap<String, PoolInformation>();
         this.vetoed = new HashSet<UUID>();
     }
 
     @Override
-    public void playerJoin(ProxiedPlayer player, Match match) {
+    public void playerJoin(Player player, Match match) {
         if (match.getStatus() != MatchStatus.CREATED)
             return;
 
@@ -48,10 +68,10 @@ public class VetoManager implements MatchStatusListener {
         if (information == null)
             return; // they will be sent the vetoes in a moment
 
-        ProxyServer.getInstance().getScheduler().schedule(NervePlugin.getInstance(), () -> {
+        server.getScheduler().buildTask(plugin, () -> {
             if (match.getStatus() == MatchStatus.CREATED && match.getMap() == null)
                 sendVetoes(player, match, Messages.vetoOptions(information.getMaps()));
-        }, 1, TimeUnit.SECONDS);
+        }).delay(1, TimeUnit.SECONDS).schedule();
     }
 
     @Override
@@ -61,54 +81,60 @@ public class VetoManager implements MatchStatusListener {
 
         if (match.getMap() != null) {
             pools.remove(match.getId());
-            BaseComponent[] mapDecided = Messages.mapDecided(match.getMap());
+            TextComponent mapDecided = Messages.mapDecided(match.getMap());
 
             for (Team team : match.getTeams()) {
                 inner: for (User participant : team.getPlayers()) {
                     vetoed.remove(participant.getUniqueId());
-                    ProxiedPlayer player = ProxyServer.getInstance().getPlayer(participant.getUniqueId());
-                    if (player == null)
+                    Optional<Player> player = server.getPlayer(participant.getUniqueId());
+                    if (!player.isPresent())
                         continue inner;
 
-                    player.sendMessage(mapDecided);
+                    player.get().sendMessage(mapDecided);
                 }
             }
 
             return;
         }
 
-        NervePlugin.async(() -> {
+        executor.async(() -> {
             int queueSize = match.getQueueSize();
             PoolInformation information = api.getPoolInformation(queueSize);
             pools.put(match.getId(), information);
 
-            BaseComponent[] vetoOptions = Messages.vetoOptions(information.getMaps());
+            TextComponent vetoOptions = Messages.vetoOptions(information.getMaps());
 
             for (Team team : match.getTeams()) {
                 inner: for (User participant : team.getPlayers()) {
-                    ProxiedPlayer player = ProxyServer.getInstance().getPlayer(participant.getUniqueId());
-                    if (player == null)
+                    Optional<Player> player = server.getPlayer(participant.getUniqueId());
+                    if (!player.isPresent())
                         continue inner;
 
-                    sendVetoes(player, match, vetoOptions);
+                    sendVetoes(player.get(), match, vetoOptions);
                 }
             }
 
         });
     }
 
-    public void sendVetoes(ProxiedPlayer player, Match match, BaseComponent[] vetoOptions) {
-        if (!player.isConnected())
+    public void sendVetoes(Player player, Match match, TextComponent vetoOptions) {
+        if (!player.isActive())
             return;
 
         player.sendMessage(vetoMessage);
         player.sendMessage(vetoOptions);
-        Sounds.playDing(player);
+        sounds.playDing(player);
     }
 
-    public void vetoMap(ProxiedPlayer player, Match match, String query) {
+    public void vetoMap(Player player, Match match, String query) {
         String found = null;
-        for (String map : pools.get(match.getId()).getMaps()) {
+        PoolInformation info = pools.get(match.getId());
+        if (info == null) {
+            player.sendMessage(Component.text("Please wait a few seconds before running this command again.").color(NamedTextColor.RED));
+            return;
+        }
+
+        for (String map : info.getMaps()) {
             if (map.toLowerCase().startsWith(query.toLowerCase())) {
                 found = map;
                 break;
@@ -125,7 +151,7 @@ public class VetoManager implements MatchStatusListener {
             player.sendMessage(Messages.vetoed(found, vetoed.contains(player.getUniqueId())));
             vetoed.add(player.getUniqueId());
         } else {
-            player.sendMessage(TextComponent.fromLegacyText(ChatColor.RED + response.getError()));
+            player.sendMessage(Component.text(response.getError()).color(NamedTextColor.RED));
         }
     }
 

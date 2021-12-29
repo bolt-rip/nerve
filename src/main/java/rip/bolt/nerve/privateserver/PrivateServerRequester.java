@@ -1,24 +1,35 @@
-package rip.bolt.nerve;
+package rip.bolt.nerve.privateserver;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import org.json.JSONObject;
 import org.yaml.snakeyaml.Yaml;
 
+import com.velocitypowered.api.plugin.annotation.DataDirectory;
+import com.velocitypowered.api.proxy.Player;
+
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import rip.bolt.nerve.utils.MapUtils;
 
 public class PrivateServerRequester {
 
-    private static Map<String, Object> generateTemplate() {
+    protected File dataFolder;
+
+    @Inject
+    public PrivateServerRequester(@DataDirectory Path dataFolder) {
+        this.dataFolder = dataFolder.toFile();
+    }
+
+    private Map<String, Object> generateTemplate() {
         try {
-            File dataFolder = NervePlugin.getInstance().getDataFolder();
             File templatePath = new File(dataFolder, "template.yml");
             File secretsPath = new File(dataFolder, "secrets.yml");
 
@@ -38,7 +49,7 @@ public class PrivateServerRequester {
         return null;
     }
 
-    public static boolean request(String name) {
+    public boolean request(String name) {
         try {
             KubernetesClient client = new DefaultKubernetesClient();
 
@@ -66,7 +77,7 @@ public class PrivateServerRequester {
         }
     }
 
-    public static boolean exists(ProxiedPlayer requester) {
+    public boolean exists(Player requester) {
         try {
             KubernetesClient client = new DefaultKubernetesClient();
 
@@ -75,7 +86,7 @@ public class PrivateServerRequester {
             Map<String, Object> helmCharts = client.customResource(context).list("minecraft");
             client.close();
 
-            String k8sName = "private-" + requester.getName().toLowerCase().replaceAll("_", "-") + "-server";
+            String k8sName = "private-" + requester.getUsername().toLowerCase().replaceAll("_", "-") + "-server";
             return helmCharts.toString().contains(k8sName);
         } catch (Exception e) {
             e.printStackTrace();

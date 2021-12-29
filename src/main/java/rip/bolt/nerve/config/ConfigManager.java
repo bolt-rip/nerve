@@ -4,19 +4,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-import net.md_5.bungee.api.plugin.Plugin;
+import com.velocitypowered.api.plugin.annotation.DataDirectory;
+
 import rip.bolt.nerve.utils.FileUtils;
 
 public class ConfigManager {
 
     protected File path;
 
-    public ConfigManager(Plugin plugin, String name) {
-        this.path = new File(plugin.getDataFolder(), name + ".yml");
+    public ConfigManager(@DataDirectory File dataFolder, String name) {
+        this.path = new File(dataFolder, name + ".yml");
 
         try {
             if (!path.exists())
-                FileUtils.copyInputStreamToFile(plugin.getClass().getResourceAsStream("/" + name + ".yml"), path);
+                FileUtils.copyInputStreamToFile(ConfigManager.class.getResourceAsStream("/" + name + ".yml"), path);
         } catch (Exception e) {
             e.printStackTrace();
         }

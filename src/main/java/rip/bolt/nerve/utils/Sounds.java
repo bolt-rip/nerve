@@ -1,14 +1,21 @@
 package rip.bolt.nerve.utils;
 
-import de.exceptionflug.protocolize.world.Sound;
-import de.exceptionflug.protocolize.world.SoundCategory;
-import de.exceptionflug.protocolize.world.WorldModule;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
+import javax.inject.Inject;
+
+import com.velocitypowered.api.proxy.Player;
+
+import rip.bolt.nerve.protocol.PacketHandlerTracker;
+import rip.bolt.nerve.protocol.PlayerPacketHandler;
 
 public class Sounds {
 
-    public static void playDing(ProxiedPlayer player) {
-        WorldModule.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.BLOCKS, 1, 1.2f);
+    @Inject
+    private PacketHandlerTracker tracker;
+
+    public void playDing(Player player) {
+        PlayerPacketHandler handler = tracker.get(player);
+        if (handler != null)
+            handler.playDing(1, 1.2f);
     }
 
 }
