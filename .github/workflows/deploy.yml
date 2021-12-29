@@ -7,17 +7,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Set up Maven
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+
+      - name: Download velocity proxy
+        uses: wei/wget@v1
+        with:
+          args: -O velocity-3.0.0.jar https://versions.velocitypowered.com/download/3.0.0.jar
+
       - name: maven-settings-xml-action
         uses: whelk-io/maven-settings-xml-action@v9
         with:
           repositories: '[{ "id": "bolt-rip-public", "url": "https://repo.repsy.io/mvn/boltrip/public", "releases": { "enabled": "true" }, "snapshots": { "enabled": "true" } }]'
           servers: '[{ "id": "bolt-rip-public", "username": "${{ secrets.MAVEN_USERNAME }}", "password": "${{ secrets.MAVEN_PASSWORD }}" }]'
+
       - name: Publish package
         run: mvn -B deploy
+
       - name: trigger docker image building
         run: |
             curl -H "Authorization: token "${{ secrets.PERSONAL_ACCESS_TOKEN }}"" \
