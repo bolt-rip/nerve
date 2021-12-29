@@ -11,7 +11,7 @@ jobs:
       - name: Set up Maven
         uses: actions/setup-java@v1
         with:
-          java-version: 1.8
+          java-version: 11
 
       - name: Download velocity proxy
         uses: wei/wget@v1
