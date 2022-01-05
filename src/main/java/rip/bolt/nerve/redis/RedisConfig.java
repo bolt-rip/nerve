@@ -1,5 +1,7 @@
 package rip.bolt.nerve.redis;
 
+import javax.annotation.Nullable;
+
 import rip.bolt.nerve.document.Document;
 import rip.bolt.nerve.document.DocumentFieldName;
 import rip.bolt.nerve.inject.config.Section;
@@ -13,6 +15,7 @@ public interface RedisConfig extends Document {
 
     String host();
 
+    @Nullable
     String password();
 
     default int port() {
