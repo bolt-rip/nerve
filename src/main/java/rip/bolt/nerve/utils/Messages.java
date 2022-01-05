@@ -6,6 +6,7 @@ import static rip.bolt.nerve.utils.Components.command;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import net.kyori.adventure.text.Component;
@@ -24,7 +25,8 @@ public class Messages {
     public static final TextComponent PREFIX = text().append(colour(NamedTextColor.DARK_GRAY, "[")).append(bold(colour(NamedTextColor.YELLOW, "\u26A1")), colour(NamedTextColor.DARK_GRAY, "]")).append(colour(NamedTextColor.WHITE, " ")).build();
     public static final TextComponent DASH = colour(NamedTextColor.DARK_GRAY, " - ");
 
-    @Inject private static PrivateServerConfig privateServerConfig;
+    @Inject
+    private static PrivateServerConfig privateServerConfig;
 
     public static TextComponent privateServerStarted(String server) {
         return text().append(PREFIX).append(colour(NamedTextColor.GREEN, "Your private server has started up! Run ")).append(command(NamedTextColor.YELLOW, "server", server)).append(colour(NamedTextColor.GREEN, " to connect.")).build();
@@ -64,8 +66,27 @@ public class Messages {
         return text().append(colour(NamedTextColor.RED, "Map ")).append(colour(NamedTextColor.RED, map)).append(colour(NamedTextColor.RED, " not found.")).build();
     }
 
-    public static TextComponent vetoed(String map, boolean vetoedBefore) {
-        return text().append(PREFIX).append(colour(NamedTextColor.GOLD, vetoedBefore ? "You have changed your veto to " : "You have vetoed ")).append(colour(NamedTextColor.YELLOW, map)).append(colour(NamedTextColor.GOLD, "!")).build();
+    public static TextComponent vetoed(String map, @Nullable String teammateName, boolean vetoedBefore) {
+        TextComponent.Builder builder = text().append(PREFIX);
+
+        String displayName = teammateName;
+        String verb = "has";
+        String determiner = "their";
+
+        if (teammateName == null) {
+            displayName = "You";
+            verb = "have";
+            determiner = "your";
+        }
+
+        String sentence;
+        if (vetoedBefore)
+            sentence = String.format(" %s changed %s veto to ", verb, determiner);
+        else
+            sentence = String.format(" %s veteoed ", verb);
+
+        builder.append(colour(NamedTextColor.YELLOW, displayName)).append(colour(NamedTextColor.GOLD, sentence));
+        return builder.append(colour(NamedTextColor.YELLOW, map)).append(colour(NamedTextColor.GOLD, "!")).build();
     }
 
     public static TextComponent mapDecided(String map) {

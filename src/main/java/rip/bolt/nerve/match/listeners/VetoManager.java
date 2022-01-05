@@ -148,7 +148,18 @@ public class VetoManager implements MatchStatusListener {
 
         BoltResponse response = api.veto(match, player.getUniqueId(), new Veto(found));
         if (response.isSuccess()) {
-            player.sendMessage(Messages.vetoed(found, vetoed.contains(player.getUniqueId())));
+            player.sendMessage(Messages.vetoed(found, null, vetoed.contains(player.getUniqueId())));
+            for (User user : match.getPlayerTeam(player).getPlayers()) {
+                if (user.getUniqueId().equals(player.getUniqueId()))
+                    continue;
+
+                Optional<Player> viewer = server.getPlayer(user.getUniqueId());
+                if (!viewer.isPresent())
+                    continue;
+
+                viewer.get().sendMessage(Messages.vetoed(found, player.getUsername(), vetoed.contains(player.getUniqueId())));
+            }
+
             vetoed.add(player.getUniqueId());
         } else {
             player.sendMessage(Component.text(response.getError()).color(NamedTextColor.RED));
