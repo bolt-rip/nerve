@@ -83,7 +83,7 @@ public class Messages {
         if (vetoedBefore)
             sentence = String.format(" %s changed %s veto to ", verb, determiner);
         else
-            sentence = String.format(" %s veteoed ", verb);
+            sentence = String.format(" %s vetoed ", verb);
 
         builder.append(colour(NamedTextColor.YELLOW, displayName)).append(colour(NamedTextColor.GOLD, sentence));
         return builder.append(colour(NamedTextColor.YELLOW, map)).append(colour(NamedTextColor.GOLD, "!")).build();
