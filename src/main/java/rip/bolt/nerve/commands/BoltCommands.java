@@ -63,13 +63,13 @@ public class BoltCommands implements Commands {
             throw new CommandException("Only players can run this command!");
         Player player = (Player) sender;
 
-        String map = Components.toSpace(cmd.getJoinedStrings(0));
+        String query = Components.toSpace(cmd.getJoinedStrings(0));
         Match match = registry.getPlayerMatch(player);
         if (match == null)
             throw new CommandException("You can not veto at this time!");
 
         executor.async(() -> {
-            vetoManager.vetoMap(player, match, map);
+            vetoManager.vetoMap(player, match, query);
         });
     }
 

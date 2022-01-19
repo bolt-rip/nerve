@@ -60,7 +60,7 @@ public class AutomoveManager implements MatchStatusListener {
             player.createConnectionRequest(assignedServer).fireAndForget();
         } else {
             sounds.playDing(player);
-            player.sendMessage(Messages.rankedMatchReady(assignedServer.getServerInfo().getName(), match.getMap()));
+            player.sendMessage(Messages.rankedMatchReady(assignedServer.getServerInfo().getName(), match.getMap().getName()));
         }
     }
 

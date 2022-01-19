@@ -16,6 +16,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import rip.bolt.nerve.api.definitions.Match;
+import rip.bolt.nerve.api.definitions.PGMMap;
 import rip.bolt.nerve.api.definitions.QueueUpdate.Action;
 import rip.bolt.nerve.api.definitions.Team;
 import rip.bolt.nerve.privateserver.PrivateServerConfig;
@@ -44,7 +45,7 @@ public class Messages {
         return text().append(PREFIX).append(colour(NamedTextColor.GOLD, "Your match is starting. Pick the map you want to ")).append(bold(colour(NamedTextColor.RED, "veto"))).append(colour(NamedTextColor.GOLD, ":")).build();
     }
 
-    public static TextComponent vetoOptions(List<String> maps) {
+    public static TextComponent vetoOptions(List<PGMMap> maps) {
         TextComponent[] message = new TextComponent[maps.size() * 2];
         for (int i = 0; i < maps.size(); i++) {
             message[i * 2] = DASH;
@@ -58,15 +59,15 @@ public class Messages {
         return builder.build();
     }
 
-    public static TextComponent formatMapName(String map) {
-        return command(NamedTextColor.YELLOW, text(map), "bolt", "veto", map);
+    public static TextComponent formatMapName(PGMMap map) {
+        return command(NamedTextColor.YELLOW, text(map.getName()), "bolt", "veto", map.getName());
     }
 
-    public static TextComponent mapNotFound(String map) {
-        return text().append(colour(NamedTextColor.RED, "Map ")).append(colour(NamedTextColor.RED, map)).append(colour(NamedTextColor.RED, " not found.")).build();
+    public static TextComponent queryNotFound(String query) {
+        return text().append(colour(NamedTextColor.RED, "Map ")).append(colour(NamedTextColor.RED, query)).append(colour(NamedTextColor.RED, " not found.")).build();
     }
 
-    public static TextComponent vetoed(String map, @Nullable String teammateName, boolean vetoedBefore) {
+    public static TextComponent vetoed(PGMMap map, @Nullable String teammateName, boolean vetoedBefore) {
         TextComponent.Builder builder = text().append(PREFIX);
 
         String displayName = teammateName;
@@ -86,11 +87,11 @@ public class Messages {
             sentence = String.format(" %s vetoed ", verb);
 
         builder.append(colour(NamedTextColor.YELLOW, displayName)).append(colour(NamedTextColor.GOLD, sentence));
-        return builder.append(colour(NamedTextColor.YELLOW, map)).append(colour(NamedTextColor.GOLD, "!")).build();
+        return builder.append(colour(NamedTextColor.YELLOW, map.getName())).append(colour(NamedTextColor.GOLD, "!")).build();
     }
 
-    public static TextComponent mapDecided(String map) {
-        return text().append(PREFIX).append(colour(NamedTextColor.GOLD, "You will be playing on ")).append(colour(NamedTextColor.YELLOW, map)).append(colour(NamedTextColor.GOLD, "!")).build();
+    public static TextComponent mapDecided(PGMMap map) {
+        return text().append(PREFIX).append(colour(NamedTextColor.GOLD, "You will be playing on ")).append(colour(NamedTextColor.YELLOW, map.getName())).append(colour(NamedTextColor.GOLD, "!")).build();
     }
 
     public static TextComponent formatMatchHeader(Match match) {

@@ -14,8 +14,9 @@ import com.velocitypowered.api.proxy.Player;
 public class Match {
 
     private String id;
-    private String map;
+    private PGMMap map;
     private String server;
+    private int seriesId;
 
     @JsonProperty(access = Access.WRITE_ONLY)
     private List<Team> teams;
@@ -38,11 +39,11 @@ public class Match {
         return id;
     }
 
-    public String getMap() {
+    public PGMMap getMap() {
         return map;
     }
 
-    public void setMap(String map) {
+    public void setMap(PGMMap map) {
         this.map = map;
     }
 
@@ -52,6 +53,14 @@ public class Match {
 
     public void setServer(String server) {
         this.server = server;
+    }
+
+    public int getSeriesId() {
+        return this.seriesId;
+    }
+
+    public void setSeriesId(int seriesId) {
+        this.seriesId = seriesId;
     }
 
     public List<Team> getTeams() {
@@ -103,7 +112,7 @@ public class Match {
     }
 
     public int getQueueSize() {
-        return teams.get(0).getParticipations().size();
+        return teams.get(0).getParticipations().size() * 2;
     }
 
     public Team getPlayerTeam(Player player) {

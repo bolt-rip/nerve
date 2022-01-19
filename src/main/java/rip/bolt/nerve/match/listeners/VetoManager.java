@@ -21,10 +21,10 @@ import rip.bolt.nerve.api.APIManager;
 import rip.bolt.nerve.api.definitions.BoltResponse;
 import rip.bolt.nerve.api.definitions.Match;
 import rip.bolt.nerve.api.definitions.MatchStatus;
-import rip.bolt.nerve.api.definitions.PoolInformation;
+import rip.bolt.nerve.api.definitions.PGMMap;
+import rip.bolt.nerve.api.definitions.Pool;
 import rip.bolt.nerve.api.definitions.Team;
 import rip.bolt.nerve.api.definitions.User;
-import rip.bolt.nerve.api.definitions.Veto;
 import rip.bolt.nerve.match.MatchStatusListener;
 import rip.bolt.nerve.utils.Executor;
 import rip.bolt.nerve.utils.Messages;
@@ -40,7 +40,7 @@ public class VetoManager implements MatchStatusListener {
 
     private Sounds sounds;
 
-    private Map<String, PoolInformation> pools;
+    private Map<String, Pool> pools;
     private Set<UUID> vetoed;
 
     private static final TextComponent vetoMessage = Messages.vetoMessage();
@@ -55,7 +55,7 @@ public class VetoManager implements MatchStatusListener {
 
         this.sounds = sounds;
 
-        this.pools = new HashMap<String, PoolInformation>();
+        this.pools = new HashMap<String, Pool>();
         this.vetoed = new HashSet<UUID>();
     }
 
@@ -64,13 +64,13 @@ public class VetoManager implements MatchStatusListener {
         if (match.getStatus() != MatchStatus.CREATED)
             return;
 
-        PoolInformation information = pools.get(match.getId());
-        if (information == null)
+        Pool pool = pools.get(match.getId());
+        if (pool == null)
             return; // they will be sent the vetoes in a moment
 
         server.getScheduler().buildTask(plugin, () -> {
             if (match.getStatus() == MatchStatus.CREATED && match.getMap() == null)
-                sendVetoes(player, match, Messages.vetoOptions(information.getMaps()));
+                sendVetoes(player, match, Messages.vetoOptions(pool.getMaps()));
         }).delay(1, TimeUnit.SECONDS).schedule();
     }
 
@@ -99,10 +99,11 @@ public class VetoManager implements MatchStatusListener {
 
         executor.async(() -> {
             int queueSize = match.getQueueSize();
-            PoolInformation information = api.getPoolInformation(queueSize);
-            pools.put(match.getId(), information);
+            int seriesId = match.getSeriesId();
+            Pool pool = api.getPool(seriesId, queueSize);
+            pools.put(match.getId(), pool);
 
-            TextComponent vetoOptions = Messages.vetoOptions(information.getMaps());
+            TextComponent vetoOptions = Messages.vetoOptions(pool.getMaps());
 
             for (Team team : match.getTeams()) {
                 inner: for (User participant : team.getPlayers()) {
@@ -127,26 +128,27 @@ public class VetoManager implements MatchStatusListener {
     }
 
     public void vetoMap(Player player, Match match, String query) {
-        String found = null;
-        PoolInformation info = pools.get(match.getId());
-        if (info == null) {
-            player.sendMessage(Component.text("Please wait a few seconds before running this command again.").color(NamedTextColor.RED));
+        PGMMap found = null;
+        Pool pool = pools.get(match.getId());
+        if (pool == null) {
+            player.sendMessage(Component.text("Please wait a few seconds before running this command again.")
+                    .color(NamedTextColor.RED));
             return;
         }
 
-        for (String map : info.getMaps()) {
-            if (map.toLowerCase().startsWith(query.toLowerCase())) {
+        for (PGMMap map : pool.getMaps()) {
+            if (map.getName().toLowerCase().startsWith(query.toLowerCase())) {
                 found = map;
                 break;
             }
         }
 
         if (found == null) {
-            player.sendMessage(Messages.mapNotFound(query));
+            player.sendMessage(Messages.queryNotFound(query));
             return;
         }
 
-        BoltResponse response = api.veto(match, player.getUniqueId(), new Veto(found));
+        BoltResponse response = api.veto(match, player.getUniqueId(), found);
         if (response.isSuccess()) {
             player.sendMessage(Messages.vetoed(found, null, vetoed.contains(player.getUniqueId())));
             for (User user : match.getPlayerTeam(player).getPlayers()) {
@@ -157,7 +159,8 @@ public class VetoManager implements MatchStatusListener {
                 if (!viewer.isPresent())
                     continue;
 
-                viewer.get().sendMessage(Messages.vetoed(found, player.getUsername(), vetoed.contains(player.getUniqueId())));
+                viewer.get().sendMessage(
+                        Messages.vetoed(found, player.getUsername(), vetoed.contains(player.getUniqueId())));
             }
 
             vetoed.add(player.getUniqueId());
