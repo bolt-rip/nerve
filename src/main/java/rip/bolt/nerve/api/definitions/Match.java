@@ -16,7 +16,7 @@ public class Match {
     private String id;
     private PGMMap map;
     private String server;
-    private int seriesId;
+    private Integer seriesId;
 
     @JsonProperty(access = Access.WRITE_ONLY)
     private List<Team> teams;
@@ -55,11 +55,11 @@ public class Match {
         this.server = server;
     }
 
-    public int getSeriesId() {
+    public Integer getSeriesId() {
         return this.seriesId;
     }
 
-    public void setSeriesId(int seriesId) {
+    public void setSeriesId(Integer seriesId) {
         this.seriesId = seriesId;
     }
 

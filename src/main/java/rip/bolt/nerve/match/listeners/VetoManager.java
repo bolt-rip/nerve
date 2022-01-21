@@ -144,7 +144,7 @@ public class VetoManager implements MatchStatusListener {
         }
 
         if (found == null) {
-            player.sendMessage(Messages.queryNotFound(query));
+            player.sendMessage(Messages.mapNotFound(query));
             return;
         }
 

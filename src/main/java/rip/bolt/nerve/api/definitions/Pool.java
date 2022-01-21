@@ -7,23 +7,23 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Pool {
 
-    private int id;
-    private int players;
+    private Integer id;
+    private Integer players;
     private List<PGMMap> maps;
 
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getPlayers() {
+    public Integer getPlayers() {
         return this.players;
     }
 
-    public void setPlayers(int players) {
+    public void setPlayers(Integer players) {
         this.players = players;
     }
 

@@ -63,7 +63,7 @@ public class Messages {
         return command(NamedTextColor.YELLOW, text(map.getName()), "bolt", "veto", map.getName());
     }
 
-    public static TextComponent queryNotFound(String query) {
+    public static TextComponent mapNotFound(String query) {
         return text().append(colour(NamedTextColor.RED, "Map ")).append(colour(NamedTextColor.RED, query)).append(colour(NamedTextColor.RED, " not found.")).build();
     }
 
