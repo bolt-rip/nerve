@@ -12,8 +12,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import rip.bolt.nerve.api.definitions.BoltResponse;
 import rip.bolt.nerve.api.definitions.Match;
-import rip.bolt.nerve.api.definitions.PoolInformation;
-import rip.bolt.nerve.api.definitions.Veto;
+import rip.bolt.nerve.api.definitions.Pool;
+import rip.bolt.nerve.api.definitions.PGMMap;
 
 public class APIManager {
 
@@ -28,12 +28,12 @@ public class APIManager {
         apiService = retrofit.create(APIService.class);
     }
 
-    public PoolInformation getPoolInformation(int queueSize) {
-        return apiService.getPoolInformation(queueSize);
+    public Pool getPool(int seriesId, int queueSize) {
+        return apiService.getPool(seriesId, queueSize);
     }
 
-    public BoltResponse veto(Match match, UUID uuid, Veto veto) {
-        return apiService.veto(match.getId(), uuid.toString(), veto);
+    public BoltResponse veto(Match match, UUID uuid, PGMMap map) {
+        return apiService.veto(match.getId(), uuid.toString(), map);
     }
 
     public List<Match> matches() {
