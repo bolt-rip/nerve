@@ -18,6 +18,8 @@ public class Match {
     private String server;
     private Integer seriesId;
 
+    private Pool pool;
+
     @JsonProperty(access = Access.WRITE_ONLY)
     private List<Team> teams;
     private Team winner;
@@ -61,6 +63,14 @@ public class Match {
 
     public void setSeriesId(Integer seriesId) {
         this.seriesId = seriesId;
+    }
+
+    public Pool getPool() {
+        return pool;
+    }
+
+    public void setPool(Pool pool) {
+        this.pool = pool;
     }
 
     public List<Team> getTeams() {

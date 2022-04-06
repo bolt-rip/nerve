@@ -2,6 +2,7 @@ package rip.bolt.nerve.match.listeners;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -64,13 +65,17 @@ public class VetoManager implements MatchStatusListener {
         if (match.getStatus() != MatchStatus.CREATED)
             return;
 
-        Pool pool = pools.get(match.getId());
+        Pool pool = match.getPool();
+        if (pool == null)
+            pool = pools.get(match.getId());
+
         if (pool == null)
             return; // they will be sent the vetoes in a moment
 
+        TextComponent vetoOptions = Messages.vetoOptions(pool.getMaps());
         server.getScheduler().buildTask(plugin, () -> {
             if (match.getStatus() == MatchStatus.CREATED && match.getMap() == null)
-                sendVetoes(player, match, Messages.vetoOptions(pool.getMaps()));
+                sendVetoes(player, match, vetoOptions);
         }).delay(1, TimeUnit.SECONDS).schedule();
     }
 
@@ -100,8 +105,10 @@ public class VetoManager implements MatchStatusListener {
         executor.async(() -> {
             int queueSize = match.getQueueSize();
             int seriesId = match.getSeriesId();
-            Pool pool = api.getPool(seriesId, queueSize);
-            pools.put(match.getId(), pool);
+
+            Pool pool = match.getPool();
+            if (pool == null)
+                pools.put(match.getId(), pool = api.getPool(seriesId, queueSize));
 
             TextComponent vetoOptions = Messages.vetoOptions(pool.getMaps());
 
@@ -129,10 +136,13 @@ public class VetoManager implements MatchStatusListener {
 
     public void vetoMap(Player player, Match match, String query) {
         PGMMap found = null;
-        Pool pool = pools.get(match.getId());
+        Pool pool = match.getPool();
+
+        if (pool == null)
+            pool = pools.get(match.getId());
+
         if (pool == null) {
-            player.sendMessage(Component.text("Please wait a few seconds before running this command again.")
-                    .color(NamedTextColor.RED));
+            player.sendMessage(Component.text("Please wait a few seconds before running this command again.").color(NamedTextColor.RED));
             return;
         }
 
@@ -159,8 +169,7 @@ public class VetoManager implements MatchStatusListener {
                 if (!viewer.isPresent())
                     continue;
 
-                viewer.get().sendMessage(
-                        Messages.vetoed(found, player.getUsername(), vetoed.contains(player.getUniqueId())));
+                viewer.get().sendMessage(Messages.vetoed(found, player.getUsername(), vetoed.contains(player.getUniqueId())));
             }
 
             vetoed.add(player.getUniqueId());
