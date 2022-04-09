@@ -15,12 +15,11 @@ import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import rip.bolt.nerve.event.RedisConnectEvent;
 import rip.bolt.nerve.event.RedisMessageEvent;
-import rip.bolt.nerve.utils.Executor;
 
 public class RedisManager {
 
     private ProxyServer server;
-    private Executor executor;
+    private Thread subscriberThread;
 
     private RedisConfig config;
     private Logger logger;
@@ -30,12 +29,11 @@ public class RedisManager {
     private static String[] subscriberChannels = { "queue", "match" };
 
     @Inject
-    public RedisManager(ProxyServer server, Executor executor, RedisConfig config, Logger logger) {
+    public RedisManager(ProxyServer server, RedisConfig config, Logger logger) {
         if (!config.enabled())
             return;
 
         this.server = server;
-        this.executor = executor;
         this.config = config;
         this.logger = logger;
 
@@ -73,7 +71,7 @@ public class RedisManager {
     }
 
     public void startSubscriberThread() {
-        executor.async(() -> {
+        this.subscriberThread = new Thread(() -> {
             while (!Thread.interrupted() && !pool.isClosed()) {
                 try (Jedis jedis = pool.getResource()) {
                     logger.info("Connected to Redis!");
@@ -98,6 +96,8 @@ public class RedisManager {
                 }
             }
         });
+        this.subscriberThread.setDaemon(true);
+        this.subscriberThread.start();
     }
 
 }
