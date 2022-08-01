@@ -119,7 +119,7 @@ public class BoltCommands implements Commands {
     public void staff(final CommandContext cmd, CommandSource sender) throws CommandException {
         executor.async(() -> {
             for (RegisteredServer server : this.server.getAllServers()) {
-                if (!(server.getServerInfo().getName().toLowerCase().startsWith("ranked-") || server.getServerInfo().getName().equals("lobby")))
+                if (!(server.getServerInfo().getName().toLowerCase().startsWith("bolt-") || server.getServerInfo().getName().equals("lobby")))
                     continue;
 
                 List<String> onlineStaff = new ArrayList<String>();

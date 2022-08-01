@@ -124,7 +124,7 @@ public class ServerAddedListener {
             }
 
             RegisteredServer registeredServer = (RegisteredServer) serverField.get(snapServerInfo);
-            if (registeredServer.getServerInfo().getName().startsWith("ranked-"))
+            if (registeredServer.getServerInfo().getName().startsWith("bolt-"))
                 return;
 
             Optional<Player> requester = server.getPlayer(registeredServer.getServerInfo().getName());
