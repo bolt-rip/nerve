@@ -72,7 +72,7 @@ public class PrivateCommand implements Commands {
                 }
 
                 player.sendMessage(Messages.colour(NamedTextColor.GOLD, "Requesting private server..."));
-                if (!requester.request(player.getUsername()))
+                if (!requester.request(player))
                     player.sendMessage(Messages.colour(NamedTextColor.RED, "An error occured while requesting your private server!"));
 
                 return;
@@ -96,7 +96,7 @@ public class PrivateCommand implements Commands {
                 }
 
                 sender.sendMessage(Messages.colour(NamedTextColor.GOLD, "Requesting private server for " + target.getUsername() + "..."));
-                if (!requester.request(target.getUsername()))
+                if (!requester.request(target))
                     sender.sendMessage(Messages.colour(NamedTextColor.RED, "An error occured while requesting a private server!"));
 
                 return;

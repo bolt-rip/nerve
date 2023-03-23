@@ -49,11 +49,14 @@ public class PrivateServerRequester {
         return null;
     }
 
-    public boolean request(String name) {
+    public boolean request(Player player) {
         try {
             KubernetesClient client = new DefaultKubernetesClient();
 
             CustomResourceDefinitionContext context = new CustomResourceDefinitionContext.Builder().withName("helmcharts.helm.cattle.io").withGroup("helm.cattle.io").withScope("Namespaced").withVersion("v1").withPlural("helmcharts").build();
+
+            String name = player.getUsername();
+            String uuid = player.getUniqueId().toString();
 
             Map<String, Object> template = generateTemplate();
             JSONObject helmChartJSONObject = new JSONObject(template);
@@ -65,6 +68,7 @@ public class PrivateServerRequester {
             metadata.put("name", "private-" + name.toLowerCase().replaceAll("_", "-") + "-server");
             setValues.put("config.serverName", name);
             setValues.put("config.operators", name);
+            setValues.put("config.operatorsUuids", uuid);
 
             client.customResource(context).create("minecraft", helmChartJSONObject.toString());
             client.close();
