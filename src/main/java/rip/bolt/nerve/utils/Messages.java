@@ -7,7 +7,6 @@ import static rip.bolt.nerve.utils.Components.command;
 import java.util.List;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -19,15 +18,11 @@ import rip.bolt.nerve.api.definitions.Match;
 import rip.bolt.nerve.api.definitions.PGMMap;
 import rip.bolt.nerve.api.definitions.QueueUpdate.Action;
 import rip.bolt.nerve.api.definitions.Team;
-import rip.bolt.nerve.privateserver.PrivateServerConfig;
 
 public class Messages {
 
     public static final TextComponent PREFIX = text().append(colour(NamedTextColor.DARK_GRAY, "[")).append(bold(colour(NamedTextColor.YELLOW, "\u26A1")), colour(NamedTextColor.DARK_GRAY, "]")).append(colour(NamedTextColor.WHITE, " ")).build();
     public static final TextComponent DASH = colour(NamedTextColor.DARK_GRAY, " - ");
-
-    @Inject
-    private static PrivateServerConfig privateServerConfig;
 
     public static TextComponent privateServerStarted(String server) {
         return text().append(PREFIX).append(colour(NamedTextColor.GREEN, "Your private server has started up! Run ")).append(command(NamedTextColor.YELLOW, "server", server)).append(colour(NamedTextColor.GREEN, " to connect.")).build();
@@ -142,10 +137,6 @@ public class Messages {
 
     public static TextComponent formatServerName(String server) {
         return text().append(colour(NamedTextColor.WHITE, "[")).append(colour(NamedTextColor.GOLD, server)).append(colour(NamedTextColor.WHITE, "] ")).build();
-    }
-
-    public static TextComponent noPermsPrivateServer() {
-        return text().append(LegacyComponentSerializer.legacyAmpersand().deserialize(privateServerConfig.no_perms_message())).append(link(privateServerConfig.no_perms_link())).build();
     }
 
     public static TextComponent colour(NamedTextColor colour, String text) {
