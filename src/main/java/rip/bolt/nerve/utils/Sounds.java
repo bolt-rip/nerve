@@ -1,21 +1,20 @@
 package rip.bolt.nerve.utils;
 
-import javax.inject.Inject;
-
+import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.proxy.Player;
-
-import rip.bolt.nerve.protocol.PacketHandlerTracker;
-import rip.bolt.nerve.protocol.PlayerPacketHandler;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 
 public class Sounds {
 
-    @Inject
-    private PacketHandlerTracker tracker;
+    static final String DING_LEGACY = "random.orb";
+    static final String DING_MODERN = "entity.experience_orb.pickup";
 
     public void playDing(Player player) {
-        PlayerPacketHandler handler = tracker.get(player);
-        if (handler != null)
-            handler.playDing(1, 1.2f);
+        if (player.getProtocolVersion().compareTo(ProtocolVersion.MINECRAFT_1_9) < 0)
+            player.playSound(Sound.sound(Key.key(DING_LEGACY), Sound.Source.MASTER, 1, 1.2f));
+        else
+            player.playSound(Sound.sound(Key.key(DING_MODERN), Sound.Source.MASTER, 1, 1.2f));
     }
 
 }
