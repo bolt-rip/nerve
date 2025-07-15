@@ -35,6 +35,8 @@ import rip.bolt.nerve.match.MatchModule;
 import rip.bolt.nerve.match.listeners.AutomoveManager;
 import rip.bolt.nerve.match.listeners.TeamInformationManager;
 import rip.bolt.nerve.match.listeners.VetoManager;
+import rip.bolt.nerve.privateserver.PrivateServerModule;
+import rip.bolt.nerve.protocol.ProtocolModule;
 import rip.bolt.nerve.redis.RedisModule;
 import rip.bolt.nerve.utils.Messages;
 import rip.bolt.nerve.utils.Sounds;
@@ -80,6 +82,8 @@ public class NervePlugin extends AbstractModule {
         install(new RedisModule());
 
         install(new MatchModule());
+        install(new ProtocolModule());
+        install(new PrivateServerModule());
 
         FacetBinder facetBinder = new FacetBinder(binder());
         facetBinder.register(BoltCommands.BoltParentCommand.class);

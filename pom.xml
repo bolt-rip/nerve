@@ -42,10 +42,6 @@
 			<id>velocity</id>
 			<url>https://nexus.velocitypowered.com/repository/maven-public/</url>
 		</repository>
-		<repository>
-			<id>papermc</id>
-			<url>https://repo.papermc.io/repository/maven-public/</url>
-		</repository>
 	</repositories>
 
 	<dependencies>
@@ -62,9 +58,10 @@
 		</dependency>
 		<dependency>
 			<groupId>com.velocitypowered</groupId>
-			<artifactId>velocity-api</artifactId>
-			<version>3.4.0-SNAPSHOT</version>
-			<scope>provided</scope>
+			<artifactId>velocity-proxy</artifactId>
+			<version>3.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/velocity-3.0.0.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.squareup.retrofit2</groupId>
@@ -79,7 +76,18 @@
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20231013</version>
+			<version>20190722</version>
+		</dependency>
+		<dependency>
+			<groupId>io.fabric8</groupId>
+			<artifactId>kubernetes-client</artifactId>
+			<version>4.10.2</version>
+		</dependency>
+		<dependency>
+			<groupId>de.craftmania</groupId>
+			<artifactId>DockerizedCraft</artifactId>
+			<version>0.2.6</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
